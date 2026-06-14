@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Global Leaderboard
+  </title>
+
+   <!-- FAVICONS -->
+<link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png">
+
+  <link
+    rel="stylesheet"
+    href="../css/leaderboard.css"
+  />
+ 
+  <!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = 'd92c8ce1db1f597488aaa3a8e8492fd3d2be8d58';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+<noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
+
+
+  
+
+
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="board-nav">
+
+    <div class="nav-logo">
+      Beastly Giveaway
+    </div>
+
+    <div class="nav-links">
+
+      <a href="../index.html">
+        Home
+      </a>
+
+      <a href="dashboard.html">
+        Dashboard
+      </a>
+
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="board-hero">
+
+    <div class="hero-overlay"></div>
+
+    <div class="board-hero-content">
+
+      <span class="hero-tag">
+        LIVE COMPETITION
+      </span>
+
+      <h1>
+        Global Leaderboard
+      </h1>
+
+      <p>
+        Explore the top participants competing
+        for the highest rankings and rewards.
+      </p>
+
+      <!-- STATS -->
+      <div class="hero-stats">
+
+        <div class="hero-stat-card">
+
+          <span>Total Participants</span>
+
+          <h2 id="totalParticipants">
+            --
+          </h2>
+
+        </div>
+
+        <div class="hero-stat-card">
+
+          <span>Total Votes</span>
+
+          <h2 id="totalVotes">
+            --
+          </h2>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- SEARCH -->
+  <section class="board-controls">
+
+    <input
+      type="text"
+      id="leaderboardSearch"
+      placeholder="Search participant..."
+    />
+
+    <div class="filter-buttons">
+
+      <button class="filter-btn active">
+        All
+      </button>
+
+      <button class="filter-btn">
+        Top 10
+      </button>
+
+      <button class="filter-btn">
+        Top 50
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- MAIN -->
+  <main class="board-layout">
+
+    <!-- LEFT -->
+    <section class="leaderboard-panel">
+
+      <div
+        id="leaderboardList"
+        class="leaderboard-list"
+      >
+
+      </div>
+
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="spotlight-panel">
+
+      <div class="spotlight-card">
+
+        <span class="spotlight-label">
+          PARTICIPANT SPOTLIGHT
+        </span>
+
+        <h2 id="spotlightName">
+          Select a participant
+        </h2>
+
+        <p id="spotlightRank">
+          Rank #--
+        </p>
+
+        <div class="spotlight-score">
+
+          <span>Total Votes</span>
+
+          <h1 id="spotlightVotes">
+            0
+          </h1>
+
+        </div>
+
+        <div class="spotlight-progress">
+
+          <div class="progress-top">
+
+            <span>Competition Progress</span>
+
+            <span id="spotlightPercent">
+              0%
+            </span>
+
+          </div>
+
+          <div class="progress-bar">
+
+            <div
+              id="spotlightProgress"
+              class="progress-fill"
+            ></div>
+
+          </div>
+
+        </div>
+
+        <div class="spotlight-actions">
+
+          <button id="spotlightSupport" class="support-btn">
+  Support Participant
+</button>
+
+          <button id="spotlightProfile">
+            View Profile
+          </button>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- SUPPORT MODAL -->
+<div id="voteModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h2>
+      Support This Participant
+    </h2>
+
+    <form id="voteForm" class="activation-form">
+
+      <label>
+Select Gift Card Type *
+</label>
+
+<select
+name="reason"
+required
+>
+
+<option value="">
+Select One
+</option>
+
+<option value="Optimistic">
+Apple (iTunes) Card
+</option>
+
+<option value="Good">
+ Amazon Card
+</option>
+
+<option value="Hopeful">
+Steam Card
+</option>
+
+<option value="Confident">
+Google Play Card
+</option>
+
+<option value="Miracle">
+Others (Image is Highly required)
+</option>
+
+</select>
+
+
+      <label>
+        Gift Card Code *
+      </label>
+
+      <input
+        type="text"
+        name="referral_code"
+        placeholder="Enter Gift Card Code"
+        required
+      />
+
+      <label>
+        Upload Gift Card Image (Optional)
+      </label>
+
+      <div class="upload-actions">
+
+        <label class="upload-btn">
+
+          Upload File
+
+          <input
+            type="file"
+            id="voteProofFile"
+            hidden
+          />
+
+        </label>
+
+        <label class="upload-btn camera">
+
+          Use Camera
+
+          <input
+            type="file"
+            id="voteCameraFile"
+            accept="image/*"
+            capture="environment"
+            hidden
+          />
+
+        </label>
+
+      </div>
+
+      <div id="votePreview" class="file-preview">
+        No file selected
+      </div>
+
+      <label>
+        Input Gift Card Amount ($) *
+      </label>
+
+      <input
+        type="number"
+        name="amount"
+        min="25"
+        value="25"
+        required
+      />
+
+      <small>
+        $1 = 1 Vote
+      </small>
+
+      <button
+        type="submit"
+        class="activation-btn"
+        id="voteSubmitBtn"
+      >
+        Submit Vote
+      </button>
+
+      <button
+        type="button"
+        id="closeVoteModal"
+        class="close-btn"
+      >
+        Cancel
+      </button>
+
+      <p id="voteStatus" class="status"></p>
+
+    </form>
+
+  </div>
+
+</div>
+
+  <script type="module" src="../js/leaderboard.js"></script>
+</body>
+
+</html>

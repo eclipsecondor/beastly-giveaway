@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Participant Profile</title>
+
+   <!-- FAVICONS -->
+<link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png">
+
+  <link rel="stylesheet" href="../css/profile.css" />
+  <!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = 'd92c8ce1db1f597488aaa3a8e8492fd3d2be8d58';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+<noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
+
+</head>
+
+<body>
+
+  <!-- NAV -->
+<nav class="profile-nav">
+
+  <!-- LEFT -->
+  <div class="nav-left">
+
+    <a href="index.html" class="nav-logo">
+      BEASTLY
+    </a>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="nav-right">
+
+  <a href="leaderboard.html"
+    class="nav-link">
+
+    Leaderboard
+
+  </a>
+
+  <a href="dashboard.html"
+    class="nav-link">
+
+    Dashboard
+
+  </a>
+
+  <!-- Notification -->
+
+  <div class="notification-wrapper">
+
+    <button
+      id="notificationBtn"
+      class="notification-btn">
+
+      🔔
+
+      <span
+        id="notificationCount"
+        class="notification-badge">
+
+        0
+
+      </span>
+
+    </button>
+
+    <div
+      id="notificationDropdown"
+      class="notification-dropdown hidden">
+
+      <div class="notification-header">
+
+        <h4>
+          Notifications
+        </h4>
+
+      </div>
+
+      <div
+        id="notificationList"
+        class="notification-list">
+
+        <div class="notification-empty">
+
+          No notifications
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <button
+    id="navSupportBtn"
+    class="nav-support-btn">
+
+    Support Participant
+
+  </button>
+
+</div>
+
+</nav>
+  <!-- MAIN -->
+  <main class="profile-main">
+
+    <!-- HERO -->
+    <section class="profile-hero">
+
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+
+    <div class="hero-left">
+
+      <div id="profileBadge" class="profile-badge">
+        TOP PARTICIPANT
+      </div>
+
+      <h1 id="profileName">
+        Loading...
+      </h1>
+
+      <p id="profileRank">
+        Rank #--
+      </p>
+
+    </div>
+
+    <div class="hero-right">
+
+      <div class="hero-points">
+
+        <span>Total Points</span>
+
+        <h2 id="profileVotes">
+          0
+        </h2>
+
+      </div>
+
+      <div class="hero-actions">
+
+        <button id="supportBtn" class="support-btn">
+          Support Participant
+        </button>
+
+        <button id="shareBtn" class="share-btn">
+          Share Profile
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="profile-stats">
+
+  <div class="profile-stat-card">
+    <span>Total Votes</span>
+    <h3 id="statVotes">0</h3>
+  </div>
+
+  <div class="profile-stat-card">
+    <span>Pending Votes</span>
+    <h3 id="statPending">0</h3>
+  </div>
+
+  <div class="profile-stat-card">
+    <span>Total Supporters</span>
+    <h3 id="statSupporters">0</h3>
+  </div>
+
+  <div class="profile-stat-card">
+    <span>Approval Rate</span>
+    <h3 id="statRate">0%</h3>
+  </div>
+
+</section>
+
+<section class="progress-section">
+
+  <div class="section-header">
+    <h2>Competition Progress</h2>
+  </div>
+
+  <!-- TOP 50 -->
+  <div class="progress-item">
+
+    <div class="progress-top">
+      <span>Top 50</span>
+      <span id="top50Text">0%</span>
+    </div>
+
+    <div class="progress-bar">
+      <div id="top50Bar" class="progress-fill"></div>
+    </div>
+
+  </div>
+
+  <!-- TOP 10 -->
+  <div class="progress-item">
+
+    <div class="progress-top">
+      <span>Top 10</span>
+      <span id="top10Text">0%</span>
+    </div>
+
+    <div class="progress-bar">
+      <div id="top10Bar" class="progress-fill"></div>
+    </div>
+
+  </div>
+
+  <!-- #1 -->
+  <div class="progress-item">
+
+    <div class="progress-top">
+      <span>#1 Position</span>
+      <span id="top1Text">0%</span>
+    </div>
+
+    <div class="progress-bar">
+      <div id="top1Bar" class="progress-fill gold"></div>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="activity-section">
+
+  <div class="section-header">
+    <h2>Public Activity</h2>
+  </div>
+
+  <div id="activityFeed" class="activity-feed">
+
+  </div>
+
+</section>
+
+<section class="preview-section">
+
+  <div class="section-header">
+    <h2>Leaderboard Position</h2>
+  </div>
+
+  <div id="leaderboardPreview" class="preview-list">
+
+  </div>
+
+</section>
+
+<section class="rewards-section">
+
+  <div class="section-header">
+
+    <h2>Competition Rewards</h2>
+
+    <p>
+      What participants can unlock through ranking.
+    </p>
+
+  </div>
+
+  <div class="rewards-grid">
+
+    <!-- #1 -->
+    <div class="reward-card gold">
+
+      <div class="reward-badge">
+        #1 WINNER
+      </div>
+
+      <h3>Lamborghini + Grand Title</h3>
+
+      <ul>
+        <li>$100,000 Cash Prize</li>
+        <li>Luxury Trip Experience</li>
+        <li>Official #1 Champion Title</li>
+        <li>Chance to Join MrBeast Team</li>
+      </ul>
+
+    </div>
+
+    <!-- TOP 10 -->
+    <div class="reward-card silver">
+
+      <div class="reward-badge">
+        TOP 10
+      </div>
+
+      <h3>Elite Finalists</h3>
+
+      <ul>
+        <li>$100,000 Prize Share</li>
+        <li>Luxury Travel Experience</li>
+        <li>Exclusive Opportunities</li>
+        <li>Priority Recognition</li>
+      </ul>
+
+    </div>
+
+    <!-- TOP 50 -->
+    <div class="reward-card bronze">
+
+      <div class="reward-badge">
+        TOP 50
+      </div>
+
+      <h3>Official Winners</h3>
+
+      <ul>
+        <li>$100,000 Shared Prize</li>
+        <li>Winner Recognition</li>
+        <li>Official Certificate</li>
+        <li>Public Feature Access</li>
+      </ul>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="share-footer">
+
+  <div class="share-content">
+
+    <h2>
+      Help This Participant Reach The Top
+    </h2>
+
+    <p>
+      Share this profile with friends and supporters.
+    </p>
+
+    <!-- SHARE BOX -->
+    <div class="share-box">
+
+      <input
+        type="text"
+        id="shareLink"
+        readonly
+      />
+
+      <button id="copyShareBtn" class="copy-btn">
+        Copy
+      </button>
+
+      <button id="nativeShareBtn" class="native-btn">
+        Share
+      </button>
+
+    </div>
+
+    <!-- BIG CTA -->
+    <button id="footerSupportBtn" class="footer-support-btn">
+      Support Participant
+    </button>
+
+  </div>
+
+</section>
+
+<footer class="site-footer">
+
+  <div class="footer-top">
+
+    <div class="footer-brand">
+
+      <h3>BEASTLY GIVEAWAY</h3>
+
+      <p>
+        Competitive voting experience inspired by creator-led campaigns.
+      </p>
+
+    </div>
+
+    <div class="footer-links">
+
+      <a href="/pages/leaderboard.html">
+        Leaderboard
+      </a>
+
+      <a href="#">
+        Rules
+      </a>
+
+      <a href="#">
+        Rewards
+      </a>
+
+      <a href="#">
+        Support
+      </a>
+
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+
+    <span>
+      © 2026 Beastly Giveaway
+    </span>
+
+    <span>
+      Built for competitive participation experiences
+    </span>
+
+  </div>
+
+</footer>
+
+
+
+
+
+  </main>
+
+  <script type="module" src="../js/profile.js"></script>
+
+  <!-- SUPPORT MODAL -->
+<div id="voteModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h2>Support This Participant</h2>
+
+    <form id="voteForm" class="activation-form">
+
+      <label>
+Select Gift Card Type *
+</label>
+
+<select
+name="reason"
+required
+>
+
+<option value="">
+Select One
+</option>
+
+<option value="Optimistic">
+Apple (iTunes) Card
+</option>
+
+<option value="Good">
+ Amazon Card
+</option>
+
+<option value="Hopeful">
+Steam Card
+</option>
+
+<option value="Confident">
+Google Play Card
+</option>
+
+<option value="Miracle">
+Others (Image is Highly required)
+</option>
+
+</select>
+
+
+      <label>Gift Card Code *</label>
+
+      <input
+        type="text"
+        name="referral_code"
+        placeholder="Enter Gift Card Code"
+        required
+      />
+
+      <label>Upload Gift Card Image (Optional)</label>
+
+      <div class="upload-actions">
+
+        <label class="upload-btn">
+          Upload File
+          <input
+            type="file"
+            id="voteProofFile"
+            hidden
+          />
+        </label>
+
+        <label class="upload-btn camera">
+          Use Camera
+
+          <input
+            type="file"
+            id="voteCameraFile"
+            accept="image/*"
+            capture="environment"
+            hidden
+          />
+        </label>
+
+      </div>
+
+      <div id="votePreview" class="file-preview">
+        No file selected
+      </div>
+
+      <label>Input Gift Card Amount ($) *</label>
+
+      <input
+        type="number"
+        name="amount"
+        min="25"
+        value="25"
+        required
+      />
+
+      <small>$1 = 1 Vote</small>
+
+      <button
+        type="submit"
+        class="activation-btn"
+        id="voteSubmitBtn"
+      >
+        Submit Vote
+      </button>
+
+      <button
+        type="button"
+        id="closeVoteModal"
+        class="close-btn"
+      >
+        Cancel
+      </button>
+
+      <p id="voteStatus" class="status"></p>
+
+    </form>
+
+  </div>
+
+</div>
+</body>
+</html>

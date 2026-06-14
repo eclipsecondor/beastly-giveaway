@@ -1,0 +1,609 @@
+ body {
+      background: #0b0b0b;
+      color: white;
+      font-family: Arial;
+      padding: 40px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .user-card {
+      background: #111;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      margin-right: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .approve {
+      background: #00ffcc;
+      color: #000;
+    }
+
+    .reject {
+      background: #ff4d4d;
+      color: white;
+    }
+
+    .tabs {
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 16px;
+  margin-right: 10px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tab.active {
+  background: #00ffcc;
+  color: black;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.actions {
+  margin-top: 15px;
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.status.pending {
+  background: #444;
+}
+
+.status.approved {
+  background: #00ffcc;
+  color: #000;
+}
+
+.status.rejected {
+  background: #ff4d4d;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sub-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.sub-tab {
+  padding: 8px 14px;
+  border: 1px solid #1a1a1a;
+  background: #111;
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.sub-tab.active {
+  background: #00ffcc;
+  color: #000;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
+
+.vote-date {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 6px;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+.user-card {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   🔔 NOTIFICATION MODAL
+========================= */
+
+#notificationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  margin-top: 18px;
+}
+
+/* LABELS */
+#notificationForm label {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* INPUTS */
+#notificationForm input,
+#notificationForm textarea,
+#notificationForm select {
+
+  width: 100%;
+
+  background: #0d0d0d;
+
+  border: 1px solid #222;
+
+  color: white;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  outline: none;
+
+  font-size: 14px;
+}
+
+/* TEXTAREA */
+#notificationForm textarea {
+  min-height: 120px;
+  resize: none;
+}
+
+/* FOCUS */
+#notificationForm input:focus,
+#notificationForm textarea:focus,
+#notificationForm select:focus {
+
+  border-color: #00ffcc;
+
+}
+
+/* SELECT */
+#notificationForm select {
+  cursor: pointer;
+}
+
+/* STATUS */
+#notificationStatus {
+  font-size: 13px;
+  opacity: 0.8;
+
+  margin-top: 6px;
+}
+
+/* HIDDEN */
+.hidden {
+  display: none !important;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+  #notificationForm input,
+  #notificationForm textarea,
+  #notificationForm select {
+
+    font-size: 16px;
+
+  }
+
+}
+
+/* SEARCH */
+
+#userSearch{
+
+width:100%;
+padding:14px;
+
+border-radius:12px;
+
+background:#111;
+
+border:1px solid #222;
+
+color:white;
+
+outline:none;
+}
+
+
+/* DROPDOWN */
+
+.user-dropdown{
+
+margin-top:10px;
+
+max-height:220px;
+
+overflow-y:auto;
+
+background:#0f0f0f;
+
+border-radius:14px;
+
+border:1px solid #222;
+
+display:none;
+}
+
+
+/* USER ITEM */
+
+.dropdown-user{
+
+padding:12px 15px;
+
+cursor:pointer;
+
+border-bottom:1px solid #1a1a1a;
+
+transition:.2s;
+}
+
+.dropdown-user:hover{
+
+background:#171717;
+}
+
+
+/* SELECTED USERS */
+
+.selected-users{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:8px;
+
+margin-top:14px;
+}
+
+
+/* TAG */
+
+.selected-user{
+
+background:#00ffcc20;
+
+border:1px solid #00ffcc;
+
+padding:8px 12px;
+
+border-radius:999px;
+
+font-size:13px;
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+}
+
+
+/* REMOVE */
+
+.remove-user{
+
+cursor:pointer;
+
+font-weight:bold;
+}
+
+/* =========================
+   EMAIL MODAL
+========================= */
+
+#emailUserDropdown{
+
+margin-top:10px;
+
+display:flex;
+flex-direction:column;
+gap:10px;
+
+max-height:220px;
+overflow:auto;
+
+}
+
+/* selected users */
+
+#emailSelectedUsers{
+
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+
+margin-top:14px;
+
+}
+
+/* manual email */
+
+#manualEmailBox{
+
+margin-top:14px;
+
+}
+
+/* button settings */
+
+#emailButtonBox{
+
+display:flex;
+flex-direction:column;
+gap:12px;
+
+margin-top:14px;
+
+}
+
+/* dropdown user */
+
+.dropdown-user{
+
+padding:12px;
+
+border-radius:14px;
+
+background:
+rgba(255,255,255,.05);
+
+cursor:pointer;
+
+transition:.25s;
+
+border:
+1px solid transparent;
+
+}
+
+.dropdown-user:hover{
+
+background:
+rgba(255,255,255,.09);
+
+border-color:
+rgba(255,255,255,.15);
+
+}
+
+/* selected user tag */
+
+.selected-user{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:10px 14px;
+
+border-radius:999px;
+
+background:
+linear-gradient(
+135deg,
+#ff2f5d,
+#ff6b81
+);
+
+color:white;
+
+font-size:14px;
+font-weight:600;
+
+}
+
+/* remove */
+
+.remove-email-user{
+
+cursor:pointer;
+
+font-size:18px;
+
+line-height:1;
+
+}
+
+/* textarea */
+
+#emailForm textarea{
+
+min-height:140px;
+resize:vertical;
+
+}
+
+/* modal width */
+
+#emailModal .modal-content{
+
+max-width:620px;
+width:95%;
+
+}
+
+/* inputs */
+
+#emailForm input,
+#emailForm textarea,
+#emailForm select{
+
+width:100%;
+
+padding:14px 16px;
+
+border-radius:14px;
+
+border:none;
+
+outline:none;
+
+background:
+rgba(255,255,255,.06);
+
+color:white;
+
+margin-top:8px;
+margin-bottom:16px;
+
+font-size:15px;
+
+}
+
+/* placeholders */
+
+#emailForm input::placeholder,
+#emailForm textarea::placeholder{
+
+color:#888;
+
+}
+
+/* labels */
+
+#emailForm label{
+
+display:block;
+
+font-size:14px;
+font-weight:600;
+
+margin-top:12px;
+margin-bottom:4px;
+
+color:#ddd;
+
+}
+
+/* email status */
+
+#emailStatus{
+
+margin-top:14px;
+
+font-size:14px;
+font-weight:600;
+
+color:#ff2f5d;
+
+}
+
+/* mobile */
+
+@media(max-width:768px){
+
+#emailModal .modal-content{
+
+padding:22px;
+
+}
+
+.selected-user{
+
+font-size:13px;
+
+}
+
+}
+
+/* Container styling to place them neatly side-by-side */
+.button-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Base button styles for both elements */
+.activation-btn, 
+.close-btn {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Primary "Send Email" Button */
+.activation-btn {
+  background-color: #2563eb; /* Clean Blue */
+  color: #ffffff;
+}
+
+.activation-btn:hover {
+  background-color: #1d4ed8; /* Slightly Darker Blue */
+}
+
+.activation-btn:active {
+  transform: scale(0.98); /* Subtle press effect */
+}
+
+/* Secondary "Cancel" Button */
+.close-btn {
+  background-color: transparent;
+  color: #4b5563; /* Subtle Gray */
+}
+
+.close-btn:hover {
+  background-color: #f3f4f6; /* Very Light Gray Background */
+  color: #1f2937; /* Darker Gray Text */
+}
+
+.close-btn:active {
+  transform: scale(0.98);
+}

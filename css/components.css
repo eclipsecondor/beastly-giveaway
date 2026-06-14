@@ -1,0 +1,1003 @@
+/* =========================================================
+   COMPONENTS.CSS — UI COMPONENTS & INTERACTIONS
+   ========================================================= */
+
+/* ---------------- BUTTONS ---------------- */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #000;
+  padding: 0.9rem 2.2rem;
+  font-weight: 800;
+  font-size: var(--text-small);
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: transform 0.3s var(--ease-smooth),
+              box-shadow 0.3s var(--ease-smooth),
+              opacity 0.3s var(--ease-smooth);
+}
+
+.btn-primary.large {
+  padding: 1.2rem 3rem;
+  font-size: 1rem;
+}
+
+.btn-primary.small {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.75rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 188, 231, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(0, 188, 231, 0.25);
+}
+
+/* ---------------- MODAL ---------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 420px;
+  padding: var(--space-md);
+  position: relative;
+
+  /* Glassmorphism */
+  background: rgba(15, 15, 15, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: var(--color-text-light);
+}
+
+/* ---------------- FORM ---------------- */
+form h2 {
+  margin-bottom: var(--space-sm);
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 0.9rem 0.8rem;
+  margin-bottom: 1rem;
+  background: #000;
+  border: 1px solid #222;
+  color: var(--color-text-light);
+  font-size: var(--text-body);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+form input::placeholder {
+  color: #666;
+}
+
+form input:focus,
+form select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 188, 231, 0.15);
+}
+
+/* ---------------- FORM STEPS ---------------- */
+.form-step {
+  display: none;
+}
+
+.form-step.active {
+  display: block;
+}
+
+/* ---------------- CARDS (PRIZES) ---------------- */
+.prize-card {
+  transition: transform 0.4s var(--ease-smooth),
+              box-shadow 0.4s var(--ease-smooth);
+}
+
+.prize-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------------- FAQ ---------------- */
+.faq-item h4 {
+  cursor: pointer;
+}
+
+.faq-item p {
+  margin-top: 0.3rem;
+}
+
+/* =========================================================
+   FAQ ACCORDION
+   ========================================================= */
+
+.faq-item p {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.4s var(--ease-smooth),
+    opacity 0.3s var(--ease-smooth);
+}
+
+.faq-item.active p {
+  max-height: 200px; /* enough for content */
+  opacity: 1;
+}
+
+.faq-item h4 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-item h4::after {
+  content: "+";
+  font-size: 1.2rem;
+  transition: transform 0.3s var(--ease-smooth);
+}
+
+.faq-item.active h4::after {
+  transform: rotate(45deg); /* becomes X */
+}
+
+/* ================= TESTIMONIALS ================= */
+
+.testimonials {
+  background: linear-gradient(
+    135deg,
+    #0f0f1a,
+    #111827,
+    #0b1020
+  );
+}
+
+.testimonial-track {
+  overflow: hidden;
+  margin-top: 3.5rem;
+  position: relative;
+}
+
+.testimonial-marquee {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: marquee 55s linear infinite;
+}
+
+.testimonial-marquee:hover {
+  animation-play-state: paused;
+}
+
+.testimonial-card {
+  min-width: 340px;
+  max-width: 420px;
+  padding: 1.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.testimonial-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+.testimonial-card .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+}
+
+.testimonial-card .name {
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.testimonial-card .location {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ================= FINAL CTA ================= */
+
+.final-cta {
+  position: relative;
+  padding: 7rem 1.5rem;
+  background: radial-gradient(
+      circle at top,
+      rgba(56, 189, 248, 0.15),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #020617, #020617);
+  overflow: hidden;
+  text-align: center;
+}
+
+.cta-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(34, 197, 94, 0.18),
+    transparent 65%
+  );
+  animation: glowPulse 6s ease-in-out infinite;
+}
+
+.cta-content {
+  position: relative;
+  max-width: 720px;
+  margin: auto;
+  z-index: 2;
+}
+
+.cta-content h2 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  font-size: 1.05rem;
+  opacity: 0.9;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.btn-primary.massive {
+  padding: 1.1rem 2.8rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Glow animation */
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ================= BACK TO TOP ================= */
+
+#backToTop {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #22c55e, #38bdf8);
+  color: #000;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.35s ease;
+  z-index: 999;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+}
+
+#backToTop.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+#backToTop:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+
+/* ================= ABOUT SECTION ================= */
+
+.about-section {
+  position: relative;
+  padding: 7rem 1.5rem;
+  background: linear-gradient(180deg, #020617, #020617);
+  overflow: hidden;
+}
+
+.about-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(56,189,248,0.18), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(34,197,94,0.15), transparent 45%);
+  z-index: 0;
+}
+
+.about-container {
+  position: relative;
+  max-width: 1100px;
+  margin: auto;
+  z-index: 1;
+}
+
+.about-title {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  margin-bottom: 3rem;
+  line-height: 1.1;
+}
+
+.about-title span {
+  background: linear-gradient(135deg, #22c55e, #38bdf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.about-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.about-text.lead {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.about-text.highlight {
+  font-size: 1.15rem;
+  padding-left: 1.2rem;
+  border-left: 3px solid #38bdf8;
+}
+
+/* Desktop polish */
+@media (min-width: 900px) {
+  .about-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 4rem;
+  }
+
+  .about-text.lead {
+    grid-column: span 2;
+  }
+
+  .about-text.highlight {
+    grid-column: span 2;
+  }
+}
+
+
+/* ================= HOW IT WORKS ================= */
+
+.how-section {
+  position: relative;
+  padding: 7rem 1.5rem;
+  background: url("../assets/images/how-bg.jpg") center / cover no-repeat;
+  overflow: hidden;
+}
+
+/* Dark cinematic overlay */
+.how-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(2, 6, 23, 0.5),
+      rgba(2, 6, 23, 0.6)
+    );
+  z-index: 0;
+}
+
+.how-section .section-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Catchy title */
+.how-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: 0.12em;
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+/* Steps layout polish */
+.steps.expanded {
+  display: grid;
+  gap: 2rem;
+}
+
+/* Individual step cards */
+.step {
+  position: relative;
+  padding: 2rem 2rem 2.2rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.step:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.6);
+}
+
+/* Step number */
+.step span {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+  opacity: 0.85;
+}
+
+/* Step heading */
+.step h3 {
+  font-size: 1.35rem;
+  margin: 0.6rem 0 0.6rem;
+}
+
+/* Step text */
+.step p {
+  font-size: 1rem;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+/* Desktop grid */
+@media (min-width: 900px) {
+  .steps.expanded {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .step:last-child {
+    grid-column: span 2;
+  }
+}
+
+
+/* ================= TIMELINE / COMMUNITY ================= */
+
+.timeline {
+  padding: 6rem 1.5rem;
+}
+
+/* Title */
+.timeline-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Lead text */
+.timeline-lead {
+  max-width: 720px;
+  margin: 0 auto 4rem;
+  font-size: 1.15rem;
+  opacity: 0.9;
+}
+
+/* Grid */
+.community-grid {
+  display: grid;
+  gap: 2.2rem;
+  margin-bottom: 4rem;
+}
+
+/* Individual cards */
+.community-item {
+  padding: 2.2rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.community-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Card titles */
+.community-item h3 {
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 0.08em;
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Card text */
+.community-item p {
+  font-size: 1rem;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
+/* Quote */
+.community-quote {
+  max-width: 760px;
+  margin: auto;
+  padding: 2rem 2.4rem;
+  border-left: 4px solid #38bdf8;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+}
+
+.community-quote p {
+  font-size: 1.15rem;
+  font-style: italic;
+  opacity: 0.95;
+}
+
+/* Desktop layout */
+@media (min-width: 900px) {
+  .community-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+
+/* ================= TRUST & TRANSPARENCY ================= */
+
+.trust {
+  padding: 6.5rem 1.5rem;
+}
+
+.trust-container {
+  max-width: 1000px;
+}
+
+/* Title */
+.trust-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+/* Lead */
+.trust-lead {
+  max-width: 760px;
+  margin: 0 auto 4rem;
+  text-align: center;
+  font-size: 1.15rem;
+  opacity: 0.9;
+}
+
+/* Grid */
+.trust-points {
+  display: grid;
+  gap: 2.2rem;
+}
+
+/* Individual trust cards */
+.trust-point {
+  padding: 2.2rem 2.4rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.trust-point:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 55px rgba(0, 0, 0, 0.45);
+}
+
+/* Headings */
+.trust-point h3 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+}
+
+/* Text */
+.trust-point p {
+  font-size: 1rem;
+  line-height: 1.75;
+  opacity: 0.93;
+}
+
+/* Highlight card */
+.trust-point.highlight {
+  border-left: 4px solid #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+}
+
+/* Desktop grid */
+@media (min-width: 900px) {
+  .trust-points {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trust-point.highlight {
+    grid-column: span 2;
+  }
+}
+
+
+
+/* ================= FACES SECTION ================= */
+/* ================= COMMUNITY FACES ================= */
+
+.faces-section {
+  position: relative;
+  padding: 8rem 1.5rem 6rem;
+  background: url("../assets/images/faces-bg.jpg") center / cover no-repeat;
+  overflow: hidden;
+}
+
+.faces-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      circle at top,
+      rgba(56,189,248,0.15),
+      transparent 60%
+    ),
+    linear-gradient(180deg, rgba(2,6,23,0.9), rgba(2,6,23,0.95));
+}
+
+.faces-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+
+/* ================= MR BEAST FEATURE ================= */
+
+.beast-feature {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto 5rem;
+}
+
+.beast-feature img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  position: relative;
+  z-index: 2;
+  border: 4px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+}
+
+/* Neon half ring ATTACHED to image */
+.beast-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  border-top-color: #38bdf8;
+  border-right-color: #38bdf8;
+  filter: drop-shadow(0 0 18px rgba(56,189,248,0.9));
+  z-index: 1;
+}
+
+/* MrBeast name */
+.beast-feature h2 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 3.2rem;
+  letter-spacing: 0.18em;
+  margin-top: 1.5rem;
+}
+
+/* ================= CREW ================= */
+
+.crew-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.crew-member {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(60px);
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.crew-member.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.crew-member img {
+  height: 180px;
+  object-fit: contain;
+  filter: drop-shadow(0 25px 60px rgba(0,0,0,0.6));
+}
+
+.crew-member span {
+  display: block;
+  margin-top: 0.8rem;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 1.2rem;
+}
+
+.faces-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-bottom: 4.5rem;
+}
+
+.crew-member p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.beast-feature p {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* ================= ULTIMATE GIVEAWAY ================= */
+
+#ultimate-giveaway {
+  position: relative;
+  min-height: 90vh;
+  background: url("../assets/images/ultimate-bg.jpg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.ultimate-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ultimate-content {
+  position: relative;
+  color: #fff;
+  max-width: 1100px;
+  padding: 3rem 2rem;
+}
+
+/* HEADING */
+.ultimate-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 4rem;
+}
+
+.ultimate-title span {
+  display: block;
+  color: #38bdf8;
+  margin-top: 0.5rem;
+}
+
+/* STATS */
+.ultimate-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+}
+
+.stat h3 {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 900;
+}
+
+.stat p {
+  margin-top: 0.5rem;
+  letter-spacing: 0.25em;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+/* CENTER STAT POP */
+.stat.highlight h3 {
+  color: #22c55e;
+  transform: scale(1.1);
+}
+
+/* CTA */
+.ultimate-cta {
+  padding: 1.3rem 5rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.4em;
+  border: none;
+  cursor: pointer;
+  background: #ffffff;
+  color: #000;
+  animation: pulse 2s infinite;
+}
+
+/* BUTTON ANIMATION */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  70% { box-shadow: 0 0 0 25px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .ultimate-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat.highlight h3 {
+    transform: none;
+  }
+}
+
+
+
+/* ================= HERO TITLE ================= */
+
+.hero-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* BEASTLY EMPHASIS */
+.hero-title span {
+  display: inline-block;
+  color: #38bdf8; /* Beast blue */
+  position: relative;
+}
+
+/* SUBTLE GLOW */
+.hero-title span::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  top: -20%;
+  width: 116%;
+  height: 140%;
+  background: radial-gradient(
+    circle,
+    rgba(56,189,248,0.35),
+    transparent 70%
+  );
+  z-index: -1;
+  filter: blur(18px);
+}
+
+.hero-title {
+  animation: heroFadeUp 1.1s ease forwards;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ================= LOGO ================= */
+
+.nav-logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.logo-main {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.18em;
+  color: #ffffff;
+}
+
+.logo-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #38bdf8; /* Beast blue */
+  margin-top: 2px;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+
+.nav-logo:hover .logo-sub {
+  transform: translateX(2px);
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .logo-main {
+    font-size: 1.3rem;
+  }
+
+  .logo-sub {
+    font-size: 0.55rem;
+  }
+}

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Beastly Giveaway</title>
+
+   <!-- FAVICONS -->
+<link rel="icon" type="image/png" href="/assets/images/favicon-96x96.png">
+
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+/>
+
+<!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = 'd92c8ce1db1f597488aaa3a8e8492fd3d2be8d58';
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+</script>
+<noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
+
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav-left">
+      <span class="logo-main">BEASTLY</span>
+      <span class="logo-sub">GIVEAWAY</span>
+    </div>
+
+    <div class="nav-right">
+
+  <!-- Notification -->
+
+  <div class="notification-wrapper">
+
+    <button id="notificationBtn"
+      class="notification-btn">
+
+      🔔
+
+      <span id="notificationCount"
+        class="notification-badge">
+        0
+      </span>
+
+    </button>
+
+    <div id="notificationDropdown"
+      class="notification-dropdown hidden">
+
+      <div class="notification-header">
+
+        <h4>Notifications</h4>
+
+      </div>
+
+      <div
+        id="notificationList"
+        class="notification-list">
+
+        <div class="notification-empty">
+
+          No notifications
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <span id="navName">
+    User
+  </span>
+
+  <span id="navStatus"
+    class="status">
+
+    active
+
+  </span>
+
+  <button id="logoutBtn" class="logout-btn">
+
+  <i class="fa-solid fa-power-off"></i>
+
+</button>
+
+</div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <!-- we’ll build this step by step -->
+
+    <section id="noticeBanner" class="notice hidden">
+  <span id="noticeText">Loading status...</span>
+</section>
+
+     <section class="hero">
+
+  <!-- LEFT SIDE -->
+  <div class="hero-left">
+    <h1 id="heroName">Participant</h1>
+    <p class="hero-sub">Your current performance</p>
+
+    <div class="rank-box">
+      <span>Your Rank</span>
+      <h2 id="rank">#--</h2>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="hero-right">
+
+    <div class="votes-box">
+      <span>Your Points</span>
+      <h1 id="voteCount">0</h1>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-bar">
+        <div id="progressFill"></div>
+      </div>
+      <p id="progressText">0% to top position</p>
+    </div>
+
+    <button id="voteBtn" class="vote-btn">Vote Now</button>
+
+  </div>
+
+</section>
+
+<section class="stats-grid">
+
+  <div class="stat-card">
+    <span>My Rank</span>
+    <h3 id="cardRank">#--</h3>
+  </div>
+
+  <div class="stat-card">
+    <span>Total Votes</span>
+    <h3 id="cardVotes">0</h3>
+  </div>
+
+  <div class="stat-card">
+    <span>Need To Next Rank</span>
+    <h3 id="needNext">0</h3>
+  </div>
+
+  <div class="stat-card">
+    <span>Status</span>
+    <h3 id="cardStatus">--</h3>
+  </div>
+
+</section>
+
+<section class="competition">
+
+  <h2>Your Competition</h2>
+
+  <div class="competition-grid">
+
+    <!-- USER ABOVE -->
+    <div class="comp-card" id="aboveUser">
+      <span class="comp-label">👆 Above You</span>
+      <h3 class="comp-name">--</h3>
+      <p class="comp-points">0 pts</p>
+      <span class="comp-diff">+0 to beat</span>
+    </div>
+
+    <!-- USER BELOW -->
+    <div class="comp-card" id="belowUser">
+      <span class="comp-label">👇 Below You</span>
+      <h3 class="comp-name">--</h3>
+      <p class="comp-points">0 pts</p>
+      <span class="comp-diff">0 ahead</span>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="leaderboard">
+
+  <div class="leaderboard-header">
+    <h2>Top Participants</h2>
+    <a href="/pages/leaderboard.html" class="vfl"><span>View Full Leaderboard</span></a>
+  </div>
+
+  <div id="leaderboardList" class="leaderboard-list">
+    <!-- users will load here -->
+  </div>
+
+</section>
+
+<section class="prize-section">
+
+  <h2>🏆 Prize Tiers</h2>
+
+  <div class="prize-grid">
+
+    <div class="prize-card gold">
+      <h3>🥇 #1 Winner</h3>
+      <p>Grand Prize Reward</p>
+    </div>
+
+    <div class="prize-card top10">
+      <h3>🥈 Top 10</h3>
+      <p>Elite Rewards Tier</p>
+    </div>
+
+    <div class="prize-card top50">
+      <h3>🥉 Top 50</h3>
+      <p>Qualified Participants</p>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="big-prize">
+
+  <h2>$5,000,000 Giveaway</h2>
+  <p class="big-sub">
+    Shared among 50 selected winners — <strong>$100,000 each</strong>
+  </p>
+
+  <div class="big-grid">
+
+    <!-- #1 WINNER -->
+    <div class="big-card gold">
+      <h3>🥇 #1 Winner</h3>
+      <ul>
+        <li>Lamborghini Supercar</li>
+        <li>$100,000 Cash Prize</li>
+        <li>Luxury Trip with MrBeast</li>
+        <li>Chance to Join MrBeast Team</li>
+        <li>Official #1 Winner Title</li>
+      </ul>
+    </div>
+
+    <!-- TOP 10 -->
+    <div class="big-card top10">
+      <h3>🥈 Top 10</h3>
+      <ul>
+        <li>$100,000 Cash Prize</li>
+        <li>Luxury Trip with MrBeast</li>
+        <li>Exclusive Networking Access</li>
+        <li>Priority Future Opportunities</li>
+      </ul>
+    </div>
+
+    <!-- TOP 50 -->
+    <div class="big-card top50">
+      <h3>🥉 Top 50</h3>
+      <ul>
+        <li>$100,000 Cash Share</li>
+        <li>Official Winner Certificate</li>
+        <li>Recognition in Giveaway Results</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="insights">
+
+  <h2>Your Performance Insights</h2>
+
+  <div class="insight-grid">
+
+    <div class="insight-card">
+      <span>People Behind You</span>
+      <h3 id="behindCount">0</h3>
+    </div>
+
+    <div class="insight-card">
+      <span>To Enter Top 50</span>
+      <h3 id="toTop50">0</h3>
+    </div>
+
+    <div class="insight-card">
+      <span>To Enter Top 10</span>
+      <h3 id="toTop10">0</h3>
+    </div>
+
+    <div class="insight-card">
+      <span>To Become #1</span>
+      <h3 id="toTop1">0</h3>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="share-footer">
+
+  <div class="share-content">
+
+    <h2>
+      Help Yourself Reach The Top
+    </h2>
+
+    <p>
+      Share your participant profile with friends and supporters.
+    </p>
+
+    <!-- SHARE BOX -->
+    <div class="share-box">
+
+      <input
+        type="text"
+        id="dashboardShareLink"
+        readonly
+      />
+
+      <button
+        id="copyDashboardShareBtn"
+        class="copy-btn"
+      >
+        Copy
+      </button>
+
+      <button
+        id="nativeDashboardShareBtn"
+        class="native-btn"
+      >
+        Share
+      </button>
+
+    </div>
+
+    <!-- BIG CTA -->
+    <button
+      id="openPublicProfileBtn"
+      class="footer-support-btn"
+    >
+      Open Public Profile
+    </button>
+
+  </div>
+
+</section>
+
+
+<section class="vote-analytics">
+
+  <div class="analytics-grid">
+
+    <div class="analytics-card approved">
+      <span>Approved Points</span>
+      <h3 id="approvedPoints">0</h3>
+    </div>
+
+    <div class="analytics-card pending">
+      <span>Pending Points</span>
+      <h3 id="pendingPoints">0</h3>
+    </div>
+
+    <div class="analytics-card rejected">
+      <span>Rejected Points</span>
+      <h3 id="rejectedPoints">0</h3>
+    </div>
+
+    <div class="analytics-card total">
+      <span>Total Votes</span>
+      <h3 id="totalVotesCount">0</h3>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="vote-history">
+
+  <div class="history-header">
+    <h2>Vote History</h2>
+    <span>Your recent support activity</span>
+  </div>
+
+  <div id="voteHistoryList" class="vote-history-list">
+
+    <div class="history-empty">
+      No votes yet
+    </div>
+
+  </div>
+
+</section>
+
+
+  </main>
+<footer class="footer">
+
+  <div class="footer-top">
+
+    <div class="footer-brand">
+      <h3>BEASTLY GIVEAWAY</h3>
+      <p>Compete. Rise. Win.</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="/pages/leaderboard.html">Leaderboard</a>
+      <a href="#">Rules</a>
+      <a href="#">Support</a>
+      <a href="#">Contact</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 Beastly Giveaway</span>
+    <span>All rights reserved</span>
+  </div>
+
+</footer>
+
+  <!-- VOTING MODAL -->
+<div id="voteModal" class="modal hidden">
+
+  <div class="modal-content">
+
+    <h2>Support This Participant</h2>
+
+    <form id="voteForm" class="activation-form">
+
+      <label>Why are you voting for this participant?</label>
+      <textarea name="reason" placeholder="Optional message..."></textarea>
+
+      <label>Gift Card Code</label>
+      <input type="text" name="referral_code" placeholder="Enter Gift Card Code" required/>
+
+      <label>Upload Gift Card Image (Optional)</label>
+
+      <div class="upload-actions">
+        <label class="upload-btn">
+          Upload File
+          <input type="file" id="voteProofFile" hidden />
+        </label>
+
+        <label class="upload-btn camera">
+          Use Camera
+          <input type="file" id="voteCameraFile" accept="image/*" capture="environment" hidden />
+        </label>
+      </div>
+
+      <div id="votePreview" class="file-preview">
+        No file selected
+      </div>
+
+      <label>Input Gift Card Amount ($)</label>
+      <input 
+        type="number" 
+        name="amount" 
+        min="25" 
+        value="25"
+        required
+      />
+
+      <small>$1 = 1 Vote</small>
+
+      <button type="submit" class="activation-btn" id="voteSubmitBtn">
+        Submit Vote
+      </button>
+
+      <button type="button" id="closeVoteModal" class="close-btn">
+        Cancel
+      </button>
+
+      <p id="voteStatus" class="status"></p>
+
+    </form>
+
+  </div>
+</div>
+
+<div id="dashboardGate" class="dashboard-gate hidden">
+
+  <div class="dashboard-gate-box">
+
+    <h2>Access Dashboard</h2>
+
+    <p>
+      Enter the email you used in the campaign
+    </p>
+
+    <form id="dashboardAccessForm">
+
+      <input
+        type="email"
+        id="dashboardEmail"
+        placeholder="Enter your email"
+        required
+      >
+
+      <button type="submit">
+        Continue
+      </button>
+
+    </form>
+
+    <span id="dashboardGateStatus"></span>
+
+  </div>
+
+</div>
+  <script type="module" src="../js/dashboard.js"></script>
+</body>
+</html>

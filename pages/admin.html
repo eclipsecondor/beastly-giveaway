@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin — Beastly Giveaway</title>
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+
+  <div class="admin-header">
+
+
+  <button id="adminLogoutBtn">
+    Logout
+  </button>
+
+</div>
+
+  <h1>Admin Dashboard</h1>
+<div class="tabs">
+  <button class="tab active" data-tab="pending">Pending</button>
+  <button class="tab" data-tab="approved">Approved</button>
+  <button class="tab" data-tab="rejected">Rejected</button>
+  <button class="tab" data-tab="activations">Activations</button>
+  <button class="tab" data-tab="votes">Votes</button>
+  <button class="tab" data-tab="all-users">All Users</button>
+  <button class="tab" data-tab="notifications">Notifications</button>
+  <button class="tab" data-tab="emails">Emails</button>
+</div>
+
+<!-- 🔥 PUT IT HERE -->
+<div id="voteSubTabs" class="sub-tabs hidden">
+  <button class="sub-tab active" data-filter="pending">Pending</button>
+  <button class="sub-tab" data-filter="approved">Approved</button>
+  <button class="sub-tab" data-filter="rejected">Rejected</button>
+</div>
+  <div id="usersContainer"></div>
+
+  <script type="module" src="../js/admin.js"></script>
+
+  <!-- NOTIFICATION MODAL -->
+<div
+  id="notificationModal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+    <h2>
+      Send Notification
+    </h2>
+
+    <form id="notificationForm">
+
+      <!-- TARGET -->
+      <label>
+        Send To
+      </label>
+
+      <select id="notificationTarget">
+
+        <option value="all">
+          All Users
+        </option>
+
+        <option value="single">
+          Selected User
+        </option>
+
+      </select>
+
+      <!-- USER ID -->
+      <div id="singleUserBox" class="hidden">
+
+    <input
+      id="userSearch"
+      type="text"
+      placeholder="Search user..."
+    >
+
+    <div id="userDropdown"></div>
+
+    <div id="selectedUsers"></div>
+
+</div>
+
+      <!-- TITLE -->
+      <label>
+        Title
+      </label>
+
+      <input
+        type="text"
+        id="notificationTitle"
+        placeholder="Notification title"
+        required
+      />
+
+      <!-- MESSAGE -->
+      <label>
+        Message
+      </label>
+
+      <textarea
+        id="notificationMessage"
+        placeholder="Write message..."
+        required
+      ></textarea>
+
+      <!-- BUTTONS -->
+      <button
+        type="submit"
+        class="activation-btn"
+      >
+        Send Notification
+      </button>
+
+      <button
+        type="button"
+        id="closeNotificationModal"
+        class="close-btn"
+      >
+        Cancel
+      </button>
+
+      <p
+        id="notificationStatus"
+        class="status"
+      ></p>
+
+    </form>
+
+  </div>
+
+</div>
+
+<!-- EMAIL MODAL -->
+<div
+  id="emailModal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+    <h2>
+      Send Email
+    </h2>
+
+    <form id="emailForm">
+
+      <!-- TARGET -->
+      <label>
+        Send To
+      </label>
+
+      <select id="emailTarget">
+
+        <option value="all">
+          All Users
+        </option>
+
+        <option value="selected">
+          Selected Users
+        </option>
+
+        <option value="manual">
+          Manual Email
+        </option>
+
+      </select>
+
+      <!-- USER SEARCH -->
+      <div id="emailUserBox" class="hidden">
+
+        <input
+          id="emailUserSearch"
+          type="text"
+          placeholder="Search user..."
+        >
+
+        <div id="emailUserDropdown"></div>
+
+        <div id="emailSelectedUsers"></div>
+
+      </div>
+
+      <!-- MANUAL EMAIL -->
+      <div id="manualEmailBox" class="hidden">
+
+        <input
+          type="email"
+          id="manualEmailInput"
+          placeholder="Enter email address"
+        />
+
+      </div>
+
+      <!-- SUBJECT -->
+      <label>
+        Subject
+      </label>
+
+      <input
+        type="text"
+        id="emailSubject"
+        placeholder="Email subject"
+        required
+      />
+
+      <!-- MESSAGE -->
+      <label>
+        Message
+      </label>
+
+      <textarea
+        id="emailMessage"
+        placeholder="Write email..."
+        required
+      ></textarea>
+
+      <!-- BUTTON OPTION -->
+      <label>
+        Add Button?
+      </label>
+
+      <select id="emailHasButton">
+
+        <option value="no">
+          No
+        </option>
+
+        <option value="yes">
+          Yes
+        </option>
+
+      </select>
+
+      <!-- BUTTON SETTINGS -->
+      <div id="emailButtonBox" class="hidden">
+
+        <input
+          type="text"
+          id="emailButtonText"
+          placeholder="Button text"
+        />
+
+        <input
+          type="url"
+          id="emailButtonUrl"
+          placeholder="https://example.com"
+        />
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="button-container">
+  <button type="submit" class="activation-btn">
+    Send Email
+  </button>
+
+  <button type="button" id="closeEmailModal" class="close-btn">
+    Cancel
+  </button>
+</div>
+
+
+      <p
+        id="emailStatus"
+        class="status"
+      ></p>
+
+    </form>
+
+  </div>
+
+</div>
+
+</body>
+</html>
