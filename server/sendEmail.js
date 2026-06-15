@@ -63,6 +63,35 @@ app.get("/", (req, res) => {
 
 });
 
+
+// ===============================
+// CLEAN URL ROUTES (NO .HTML)
+// ===============================
+
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "profile.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "dashboard.html"));
+});
+
+app.get("/activate", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "activate.html"));
+});
+
+app.get("/leaderboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "leaderboard.html"));
+});
+
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "admin.html"));
+});
+
+app.get("/admin-login", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "admin-login.html"));
+});
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.post("/send-activation-email", async (req, res) => {
