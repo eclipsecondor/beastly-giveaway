@@ -97,7 +97,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 app.post("/send-activation-email", async (req, res) => {
   const { email, userId, name } = req.body;
 
-  const activationLink = `${SITE_URL}/pages/activate.html?userId=${userId}`;
+  const activationLink = `${SITE_URL}/activate?userId=${userId}`;
 
   try {
     await resend.emails.send({
@@ -185,7 +185,7 @@ app.post("/send-activation-status-email", async (req, res) => {
   const { email, name, userId, status } = req.body;
 
   const dashboardLink =
-    `${SITE_URL}/pages/dashboard.html?userId=${userId}`;
+    `${SITE_URL}/dashboard?userId=${userId}`;
 
   let subject = "";
   let html = "";
@@ -772,7 +772,7 @@ app.post("/send-vote-status-email", async (req, res) => {
         <div style="text-align:center;margin-top:30px;">
 
           <a
-            href="${SITE_URL}/pages/dashboard.html"
+            href="${SITE_URL}/dashboard"
             style="
               background:#00d084;
               color:white;
@@ -1085,7 +1085,7 @@ app.post("/send-application-status-email", async (req, res) => {
   } = req.body;
 
   const activationLink =
-    `${SITE_URL}/pages/activate.html?userId=${userId}`;
+    `${SITE_URL}/activate?userId=${userId}`;
 
   let subject = "";
   let html = "";

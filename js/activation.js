@@ -538,7 +538,7 @@ async function checkActivationStatus(
 </div><br>
 
         <a
-          href="activate.html?userId=${user.id}"
+          href="/activate?userId=${user.id}"
           class="gate-btn"
         >
           Complete Activation
@@ -701,19 +701,19 @@ if(
       <div class="gate-links">
 
         <a
-          href="/pages/dashboard.html?id=${user.id}"
+          href="/dashboard?id=${user.id}"
         >
           Dashboard
         </a>
 
         <a
-          href="/pages/profile.html?id=${user.id}"
+          href="/profile?id=${user.id}"
         >
           Profile
         </a>
 
         <a
-          href="/pages/leaderboard.html"
+          href="/leaderboard"
         >
           Leaderboard
         </a>

@@ -8,7 +8,7 @@ const params = new URLSearchParams(window.location.search);
 const profileId = params.get("id");
 
 if (!profileId) {
-  window.location.href = "index.html";
+  window.location.href = "/index";
 }
 
 // LOAD PROFILE
@@ -316,7 +316,7 @@ nearbyUsers.forEach((item, i) => {
   const row = document.createElement("a");
 
 row.href =
-  `profile.html?id=${item.id}`;
+  `/profile?id=${item.id}`;
 
   row.className = "preview-row";
 
@@ -906,7 +906,7 @@ document
 ()=>{
 
 window.location.href =
-`dashboard.html?userId=${userId}`;
+`/dashboard?userId=${userId}`;
 
 }
 );

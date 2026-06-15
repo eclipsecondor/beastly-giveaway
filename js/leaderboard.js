@@ -220,7 +220,7 @@ function selectParticipant(user, rankIndex) {
   spotlightProfile.onclick = () => {
 
     window.location.href =
-      `profile.html?id=${user.id}`;
+      `/profile?id=${user.id}`;
 
   };
 

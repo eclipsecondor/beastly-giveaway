@@ -247,7 +247,7 @@ Activate your account here:
 
 <br>
 
-<a href="/pages/activate.html?userId=${data.id}"
+<a href="/activate?userId=${data.id}"
 target="_blank">
 
 Open Activation Page
@@ -447,7 +447,7 @@ const openPublicProfileBtn =
 
 // PROFILE URL
 const profileUrl =
-  `${window.location.origin}/pages/profile.html?id=${data.id}`;
+  `${window.location.origin}/profile?id=${data.id}`;
 
 // INPUT
 dashboardShareLink.value =
@@ -682,7 +682,7 @@ if (index === 0) {
 }
     const row = document.createElement("a");
 
-row.href = `profile.html?id=${user.id}`;
+row.href = `/profile?id=${user.id}`;
 
 row.className = `leaderboard-row ${rankClass}`;
 

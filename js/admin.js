@@ -9,7 +9,7 @@ localStorage.getItem(
 if (!isLoggedIn) {
 
   window.location.href =
-    "admin-login.html";
+    "admin-login";
 
 }
 
@@ -27,7 +27,7 @@ adminLogoutBtn?.addEventListener(
     );
 
     window.location.href =
-      "admin-login.html";
+      "admin-login";
 
   }
 );
@@ -669,7 +669,7 @@ document.addEventListener("click", async (e) => {
       e.target.dataset.id;
 
     window.open(
-      `profile.html?id=${userId}`,
+      `/profile?id=${userId}`,
       "_blank"
     );
 
