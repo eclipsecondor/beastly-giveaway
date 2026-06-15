@@ -1887,3 +1887,18 @@ margin-left:8px;
   color:#00ffcc;
 
 }
+
+/* INPUTS + SELECT */
+.activation-form input,
+.activation-form select{
+  width:100%;
+  padding:14px;
+  border:1px solid #2a2a2a;
+  border-radius:10px;
+  background:#0b0b0b;
+  color:#fff;
+  font-size:1rem;
+  outline:none;
+  transition:.3s;
+  box-sizing:border-box;
+}
