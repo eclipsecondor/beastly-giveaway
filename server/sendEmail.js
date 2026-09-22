@@ -15,7 +15,7 @@ import cors from "cors";
 import { Resend } from "resend";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import multer from "multer";
 import { supabaseAdmin } from "./supabaseAdmin.js";
 
 
@@ -35,6 +35,13 @@ const SITE_URL =
 
 app.use(cors());
 app.use(express.json());
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+});
 
 
 /*
@@ -82,6 +89,10 @@ app.get("/activate", (req, res) => {
 
 app.get("/leaderboard", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "pages", "leaderboard.html"));
+});
+
+app.get("/employment", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "pages", "employment.html"));
 });
 
 app.get("/admin", (req, res) => {
@@ -1314,6 +1325,1889 @@ app.post("/admin-login", async (req, res) => {
   }
 
 });
+
+app.post(
+  "/submit-employment-application",
+  upload.fields([
+    { name: "id_card", maxCount: 1 },
+    { name: "cv", maxCount: 1 }
+  ]),
+  async (req, res) => {
+
+    try {
+
+      const {
+        full_name,
+        email,
+        phone,
+        location,
+        date_of_birth,
+        id_type,
+        id_number,
+        employment_history,
+        experience,
+        motivation,
+        availability,
+        additional_information
+      } = req.body;
+
+      const idCard =
+        req.files?.id_card?.[0];
+
+      const cv =
+        req.files?.cv?.[0];
+
+
+      // -------------------------
+      // BASIC VALIDATION
+      // -------------------------
+
+      if (
+        !full_name ||
+        !email ||
+        !phone
+      ) {
+        return res.status(400).json({
+          error:
+            "Please complete all required fields."
+        });
+      }
+
+      // -------------------------
+// CHECK FOR EXISTING APPLICATION
+// -------------------------
+
+const normalizedEmail =
+  email.trim().toLowerCase();
+
+const {
+  data: existingApplication,
+  error: existingApplicationError
+} = await supabaseAdmin
+  .from("employment_applications")
+  .select("id")
+  .eq("email", normalizedEmail)
+  .maybeSingle();
+
+if (existingApplicationError) {
+
+  console.error(
+    "Employment duplicate check error:",
+    existingApplicationError
+  );
+
+  return res.status(500).json({
+    error:
+      "We were unable to verify your application. Please try again."
+  });
+
+}
+
+if (existingApplication) {
+
+  return res.status(409).json({
+    code: "APPLICATION_ALREADY_EXISTS",
+    error:
+      "You have already submitted an employment application using this email address. Your application has already been received. You will receive an email when there is an update regarding your application. Please also check your spam or junk folder."
+  });
+
+}
+
+
+      // -------------------------
+      // FILE VALIDATION
+      // -------------------------
+
+      const allowedIdTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png"
+      ];
+
+      const allowedCvTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ];
+
+
+      // Validate ID only if uploaded
+      if (idCard) {
+
+        if (!allowedIdTypes.includes(idCard.mimetype)) {
+
+          return res.status(400).json({
+            error:
+              "ID card must be PDF, JPG or PNG."
+          });
+
+        }
+
+      }
+
+
+      // Validate CV only if uploaded
+      if (cv) {
+
+        if (!allowedCvTypes.includes(cv.mimetype)) {
+
+          return res.status(400).json({
+            error:
+              "CV must be PDF, DOC or DOCX."
+          });
+
+        }
+
+      }
+
+
+      // -------------------------
+      // CREATE APPLICATION
+      // -------------------------
+
+      const { data: application, error: insertError } =
+        await supabaseAdmin
+          .from("employment_applications")
+          .insert({
+
+            full_name:
+              full_name.trim(),
+
+            email:
+              normalizedEmail,
+
+            phone:
+              phone.trim(),
+
+            location:
+              location?.trim() || null,
+
+            date_of_birth:
+              date_of_birth || null,
+
+            id_type:
+              id_type?.trim() || null,
+
+            id_number:
+              id_number?.trim() || null,
+
+            id_card_url:
+              null,
+
+            cv_url:
+              null,
+
+            employment_history:
+              employment_history?.trim() || null,
+
+            experience:
+              experience?.trim() || null,
+
+            motivation:
+              motivation?.trim() || null,
+
+            availability:
+              availability || null,
+
+            additional_information:
+              additional_information?.trim() || null,
+
+            status:
+              "pending"
+
+          })
+          .select()
+          .single();
+
+
+      if (insertError) {
+
+        console.error(
+          "Employment database error:",
+          insertError
+        );
+
+        return res.status(500).json({
+          error:
+            "Unable to save your application."
+        });
+
+      }
+
+
+      const applicationId =
+        application.id;
+
+
+      // -------------------------
+      // SAFE FILE NAME
+      // -------------------------
+
+      const safeName =
+        full_name
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+
+
+      let idCardPath = null;
+      let cvPath = null;
+
+
+      // -------------------------
+      // UPLOAD ID CARD IF PROVIDED
+      // -------------------------
+
+      if (idCard) {
+
+        const idExtension =
+          idCard.originalname
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+        idCardPath =
+          `${applicationId}/id-card/${safeName}-id.${idExtension}`;
+
+
+        const {
+          error: idUploadError
+        } = await supabaseAdmin
+          .storage
+          .from("employment-documents")
+          .upload(
+            idCardPath,
+            idCard.buffer,
+            {
+              contentType:
+                idCard.mimetype,
+
+              upsert:
+                false
+            }
+          );
+
+
+        if (idUploadError) {
+
+          console.error(
+            "ID upload error:",
+            idUploadError
+          );
+
+
+          await supabaseAdmin
+            .from("employment_applications")
+            .delete()
+            .eq("id", applicationId);
+
+
+          return res.status(500).json({
+            error:
+              "Unable to upload identification document."
+          });
+
+        }
+
+      }
+
+
+      // -------------------------
+      // UPLOAD CV IF PROVIDED
+      // -------------------------
+
+      if (cv) {
+
+        const cvExtension =
+          cv.originalname
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+        cvPath =
+          `${applicationId}/cv/${safeName}-cv.${cvExtension}`;
+
+
+        const {
+          error: cvUploadError
+        } = await supabaseAdmin
+          .storage
+          .from("employment-documents")
+          .upload(
+            cvPath,
+            cv.buffer,
+            {
+              contentType:
+                cv.mimetype,
+
+              upsert:
+                false
+            }
+          );
+
+
+        if (cvUploadError) {
+
+          console.error(
+            "CV upload error:",
+            cvUploadError
+          );
+
+
+          // Remove ID card if it was
+          // already uploaded
+          if (idCardPath) {
+
+            await supabaseAdmin
+              .storage
+              .from("employment-documents")
+              .remove([
+                idCardPath
+              ]);
+
+          }
+
+
+          await supabaseAdmin
+            .from("employment_applications")
+            .delete()
+            .eq("id", applicationId);
+
+
+          return res.status(500).json({
+            error:
+              "Unable to upload CV."
+          });
+
+        }
+
+      }
+
+
+      // -------------------------
+      // SAVE DOCUMENT PATHS
+      // -------------------------
+
+      const {
+        error: updateError
+      } = await supabaseAdmin
+        .from("employment_applications")
+        .update({
+
+          id_card_url:
+            idCardPath,
+
+          cv_url:
+            cvPath,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq("id", applicationId);
+
+
+      if (updateError) {
+
+        console.error(
+          "Employment update error:",
+          updateError
+        );
+
+
+        // Clean up uploaded files
+        const filesToRemove = [];
+
+        if (idCardPath) {
+          filesToRemove.push(idCardPath);
+        }
+
+        if (cvPath) {
+          filesToRemove.push(cvPath);
+        }
+
+        if (filesToRemove.length > 0) {
+
+          await supabaseAdmin
+            .storage
+            .from("employment-documents")
+            .remove(filesToRemove);
+
+        }
+
+
+        await supabaseAdmin
+          .from("employment_applications")
+          .delete()
+          .eq("id", applicationId);
+
+
+        return res.status(500).json({
+          error:
+            "Application could not be completed."
+        });
+
+      }
+
+
+      // -------------------------
+      // SUCCESS
+      // -------------------------
+
+      // SEND EMAILS
+try {
+
+  // EMAIL TO APPLICANT
+  await resend.emails.send({
+    from: "Beastly Giveaway <noreply@beastlygiveaway.site>",
+    to: email.trim().toLowerCase(),
+    subject: "Application Received - Disbursement Officer",
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+    }
+
+    .wrapper {
+      width: 100%;
+      padding: 40px 15px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    .header {
+      background: #111827;
+      padding: 28px 30px;
+      text-align: center;
+    }
+
+    .logo {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .header-subtitle {
+      color: #9ca3af;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .content {
+      padding: 38px 35px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff7ed;
+      color: #c2410c;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 15px;
+      font-size: 26px;
+      color: #111827;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.7;
+      margin: 0 0 16px;
+      color: #4b5563;
+    }
+
+    .application-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin: 25px 0;
+    }
+
+    .application-box .label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .application-box .value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .status {
+      color: #b45309;
+    }
+
+    .next-step {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 16px 18px;
+      border-radius: 6px;
+      margin: 25px 0;
+    }
+
+    .next-step strong {
+      color: #166534;
+    }
+
+    .footer {
+      background: #f9fafb;
+      padding: 25px 30px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .footer p {
+      font-size: 12px;
+      color: #9ca3af;
+      margin: 5px 0;
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 30px 22px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrapper">
+
+    <div class="container">
+
+      <div class="header">
+        <div class="logo">
+          Beastly Giveaway
+        </div>
+
+        <div class="header-subtitle">
+          Employment Application
+        </div>
+      </div>
+
+
+      <div class="content">
+
+        <div class="badge">
+          APPLICATION RECEIVED
+        </div>
+
+        <h1>
+          Thank you, ${full_name.trim()}!
+        </h1>
+
+        <p>
+          We have successfully received your application
+          for the <strong>Disbursement Officer</strong> position.
+        </p>
+
+        <p>
+          Your application has been submitted successfully
+          and is now awaiting review by our team.
+        </p>
+
+
+        <div class="application-box">
+
+          <div class="label">
+            POSITION
+          </div>
+
+          <div class="value">
+            Disbursement Officer
+          </div>
+
+          <br>
+
+          <div class="label">
+            APPLICATION ID
+          </div>
+
+          <div class="value">
+            ${applicationId}
+          </div>
+
+          <br>
+
+          <div class="label">
+            CURRENT STATUS
+          </div>
+
+          <div class="value status">
+            Pending Review
+          </div>
+
+        </div>
+
+
+        <div class="next-step">
+
+          <strong>What's next?</strong>
+
+          <p style="margin: 8px 0 0;">
+            Our team will review your application.
+            Your next step will be communicated to you
+            by email.
+          </p>
+
+        </div>
+
+
+        <p>
+          Please keep an eye on your inbox for future
+          updates regarding your application.
+        </p>
+
+        <p>
+          Thank you for your interest in joining
+          <strong>Beastly Giveaway</strong>.
+        </p>
+
+      </div>
+
+
+      <div class="footer">
+
+        <p>
+          © ${new Date().getFullYear()} Beastly Giveaway
+        </p>
+
+        <p>
+          This is an automated email. Please do not reply
+          to this message.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
+`
+  });
+
+
+  // EMAIL TO ADMIN
+  if (process.env.ADMIN_EMAIL) {
+
+    await resend.emails.send({
+      from: "Beastly Giveaway <noreply@beastlygiveaway.site>",
+      to: process.env.ADMIN_EMAIL,
+      subject: "New Employment Application - Disbursement Officer",
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1f2937;
+    }
+
+    .wrapper {
+      width: 100%;
+      padding: 40px 15px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 620px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    .header {
+      background: #111827;
+      padding: 28px 30px;
+    }
+
+    .logo {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .header-subtitle {
+      color: #9ca3af;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .content {
+      padding: 35px;
+    }
+
+    .alert {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 15px 18px;
+      border-radius: 6px;
+      margin-bottom: 25px;
+    }
+
+    .alert strong {
+      color: #1d4ed8;
+    }
+
+    h1 {
+      margin: 0 0 15px;
+      font-size: 25px;
+      color: #111827;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #4b5563;
+    }
+
+    .details {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 25px;
+    }
+
+    .row {
+      padding: 15px 18px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .pending {
+      color: #b45309;
+    }
+
+    .footer {
+      background: #f9fafb;
+      padding: 22px 30px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .footer p {
+      font-size: 12px;
+      color: #9ca3af;
+      margin: 5px 0;
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrapper">
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="logo">
+          Beastly Giveaway
+        </div>
+
+        <div class="header-subtitle">
+          Admin Employment Notification
+        </div>
+
+      </div>
+
+
+      <div class="content">
+
+        <div class="alert">
+
+          <strong>
+            New employment application received
+          </strong>
+
+        </div>
+
+
+        <h1>
+          Disbursement Officer Application
+        </h1>
+
+        <p>
+          A new applicant has submitted an employment
+          application and it is ready for review.
+        </p>
+
+
+        <div class="details">
+
+          <div class="row">
+
+            <div class="label">
+              Applicant
+            </div>
+
+            <div class="value">
+              ${full_name.trim()}
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <div class="label">
+              Email
+            </div>
+
+            <div class="value">
+              ${email.trim().toLowerCase()}
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <div class="label">
+              Phone
+            </div>
+
+            <div class="value">
+              ${phone.trim()}
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <div class="label">
+              Location
+            </div>
+
+            <div class="value">
+              ${location?.trim() || "Not provided"}
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <div class="label">
+              Application ID
+            </div>
+
+            <div class="value">
+              ${applicationId}
+            </div>
+
+          </div>
+
+
+          <div class="row">
+
+            <div class="label">
+              Status
+            </div>
+
+            <div class="value pending">
+              Pending Review
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <p style="margin-top:25px;">
+          Log in to the admin dashboard to review the
+          applicant's information and documents.
+        </p>
+
+      </div>
+
+
+      <div class="footer">
+
+        <p>
+          © ${new Date().getFullYear()} Beastly Giveaway
+        </p>
+
+        <p>
+          Automated employment notification
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
+`
+    });
+
+  }
+
+} catch (emailError) {
+
+  // Do not fail the application if email delivery has an issue
+  console.error(
+    "Employment email error:",
+    emailError
+  );
+
+}
+
+
+// SUCCESS
+return res.status(201).json({
+  success: true,
+
+  message:
+    "Employment application submitted successfully.",
+
+  applicationId
+});
+
+
+    } catch (error) {
+
+      console.error(
+        "Employment application server error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        error:
+          "Something went wrong while submitting your application."
+
+      });
+
+    }
+
+  }
+);
+
+// ==========================================
+// EMPLOYMENT APPLICATIONS - ADMIN
+// ==========================================
+
+app.get("/admin/employment-applications", async (req, res) => {
+
+  try {
+
+    const { data, error } = await supabaseAdmin
+      .from("employment_applications")
+      .select(`
+        id,
+        full_name,
+        email,
+        phone,
+        location,
+        date_of_birth,
+        id_type,
+        id_number,
+        id_card_url,
+        cv_url,
+        employment_history,
+        experience,
+        motivation,
+        availability,
+        additional_information,
+        status,
+        created_at,
+        updated_at
+      `)
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+
+      console.error(
+        "Employment applications fetch error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to load employment applications."
+      });
+
+    }
+
+    return res.json({
+      success: true,
+      applications: data || []
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Employment admin endpoint error:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        "Something went wrong while loading applications."
+    });
+
+  }
+
+});
+
+
+// ==========================================
+// 💼 EMPLOYMENT - APPROVE / REJECT
+// ==========================================
+
+app.post(
+  "/admin/employment-applications/:id/status",
+  async (req, res) => {
+
+    const applicationId =
+      req.params.id;
+
+    const {
+      status
+    } = req.body;
+
+
+    // Only these two actions are allowed
+    if (
+      status !== "approved" &&
+      status !== "rejected"
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        error:
+          "Invalid employment application status."
+      });
+
+    }
+
+
+    try {
+
+      // ==========================================
+      // 1. GET APPLICATION
+      // ==========================================
+
+      const {
+        data: application,
+        error: fetchError
+      } = await supabaseAdmin
+        .from("employment_applications")
+        .select(`
+          id,
+          full_name,
+          email,
+          status
+        `)
+        .eq("id", applicationId)
+        .single();
+
+
+      if (fetchError) {
+
+        console.error(
+          "Employment application fetch error:",
+          fetchError
+        );
+
+        return res.status(404).json({
+          success: false,
+          error:
+            "Employment application not found."
+        });
+
+      }
+
+
+      // ==========================================
+      // 2. DON'T PROCESS SAME STATUS AGAIN
+      // ==========================================
+
+      if (
+        String(application.status)
+          .toLowerCase() === status
+      ) {
+
+        return res.json({
+          success: true,
+          message:
+            `Application is already ${status}.`,
+          status
+        });
+
+      }
+
+
+      // ==========================================
+      // 3. UPDATE DATABASE
+      // ==========================================
+
+      const {
+        error: updateError
+      } = await supabaseAdmin
+        .from("employment_applications")
+        .update({
+          status,
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq("id", applicationId);
+
+
+      if (updateError) {
+
+        console.error(
+          "Employment status update error:",
+          updateError
+        );
+
+        return res.status(500).json({
+          success: false,
+          error:
+            "Unable to update application status."
+        });
+
+      }
+
+
+      // ==========================================
+      // 4. SEND EMAIL
+      // ==========================================
+
+      try {
+
+        const applicantName =
+          application.full_name ||
+          "Applicant";
+
+        const applicantEmail =
+          application.email;
+
+
+        let subject = "";
+
+        let html = "";
+
+
+        // ==========================================
+        // APPROVED EMAIL
+        // ==========================================
+
+        if (status === "approved") {
+
+          subject =
+            "Your Beastly Giveaway Employment Application Has Been Approved";
+
+
+          html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+</head>
+
+<body
+  style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+  "
+>
+
+  <div
+    style="
+      padding:40px 15px;
+    "
+  >
+
+    <div
+      style="
+        max-width:620px;
+        margin:auto;
+        background:#ffffff;
+        border-radius:16px;
+        overflow:hidden;
+        box-shadow:0 5px 20px rgba(0,0,0,.08);
+      "
+    >
+
+      <!-- HEADER -->
+
+      <div
+        style="
+          background:#111827;
+          padding:28px 30px;
+          text-align:center;
+        "
+      >
+
+        <div
+          style="
+            color:#ffffff;
+            font-size:24px;
+            font-weight:800;
+          "
+        >
+          Beastly Giveaway
+        </div>
+
+        <div
+          style="
+            color:#9ca3af;
+            font-size:13px;
+            margin-top:6px;
+          "
+        >
+          Employment Department
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+
+      <div
+        style="
+          padding:35px;
+        "
+      >
+
+        <div
+          style="
+            background:#ecfdf3;
+            border:1px solid #abefc6;
+            color:#027a48;
+            padding:15px 18px;
+            border-radius:10px;
+            font-weight:700;
+            margin-bottom:25px;
+          "
+        >
+          Application Approved ✓
+        </div>
+
+
+        <h1
+          style="
+            margin:0 0 15px;
+            color:#111827;
+            font-size:25px;
+          "
+        >
+          Congratulations, ${applicantName}
+        </h1>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          We are pleased to let you know that your
+          application for the
+          <strong>Disbursement Officer</strong>
+          position has been approved.
+        </p>
+
+
+        <div
+          style="
+            margin:25px 0;
+            padding:20px;
+            background:#f9fafb;
+            border-radius:10px;
+            border:1px solid #e5e7eb;
+          "
+        >
+
+          <div
+            style="
+              font-size:11px;
+              color:#667085;
+              text-transform:uppercase;
+              margin-bottom:6px;
+            "
+          >
+            Position
+          </div>
+
+          <div
+            style="
+              font-size:16px;
+              font-weight:700;
+              color:#111827;
+            "
+          >
+            Disbursement Officer
+          </div>
+
+        </div>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          Our team will contact you with the next steps
+          and any additional information required.
+        </p>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          Please keep an eye on your email for further
+          instructions.
+        </p>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div
+        style="
+          background:#f9fafb;
+          padding:20px;
+          text-align:center;
+          border-top:1px solid #e5e7eb;
+        "
+      >
+
+        <p
+          style="
+            margin:4px 0;
+            color:#9ca3af;
+            font-size:12px;
+          "
+        >
+          © ${new Date().getFullYear()}
+          Beastly Giveaway
+        </p>
+
+        <p
+          style="
+            margin:4px 0;
+            color:#9ca3af;
+            font-size:12px;
+          "
+        >
+          Automated employment notification
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
+          `;
+
+        }
+
+
+        // ==========================================
+        // REJECTED EMAIL
+        // ==========================================
+
+        else {
+
+          subject =
+            "Update Regarding Your Beastly Giveaway Employment Application";
+
+
+          html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+</head>
+
+<body
+  style="
+    margin:0;
+    padding:0;
+    background:#f4f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+  "
+>
+
+  <div
+    style="
+      padding:40px 15px;
+    "
+  >
+
+    <div
+      style="
+        max-width:620px;
+        margin:auto;
+        background:#ffffff;
+        border-radius:16px;
+        overflow:hidden;
+        box-shadow:0 5px 20px rgba(0,0,0,.08);
+      "
+    >
+
+      <!-- HEADER -->
+
+      <div
+        style="
+          background:#111827;
+          padding:28px 30px;
+          text-align:center;
+        "
+      >
+
+        <div
+          style="
+            color:#ffffff;
+            font-size:24px;
+            font-weight:800;
+          "
+        >
+          Beastly Giveaway
+        </div>
+
+        <div
+          style="
+            color:#9ca3af;
+            font-size:13px;
+            margin-top:6px;
+          "
+        >
+          Employment Department
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+
+      <div
+        style="
+          padding:35px;
+        "
+      >
+
+        <div
+          style="
+            background:#fef3f2;
+            border:1px solid #fecdca;
+            color:#b42318;
+            padding:15px 18px;
+            border-radius:10px;
+            font-weight:700;
+            margin-bottom:25px;
+          "
+        >
+          Application Update
+        </div>
+
+
+        <h1
+          style="
+            margin:0 0 15px;
+            color:#111827;
+            font-size:25px;
+          "
+        >
+          Hello, ${applicantName}
+        </h1>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          Thank you for your interest in the
+          <strong>Disbursement Officer</strong>
+          position at Beastly Giveaway.
+        </p>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          After reviewing your application, we are unable
+          to move forward with your application at this time.
+        </p>
+
+
+        <div
+          style="
+            margin:25px 0;
+            padding:20px;
+            background:#f9fafb;
+            border-radius:10px;
+            border:1px solid #e5e7eb;
+          "
+        >
+
+          <p
+            style="
+              margin:0;
+              color:#667085;
+              font-size:13px;
+              line-height:1.6;
+            "
+          >
+            We appreciate the time and effort you put into
+            your application and encourage you to watch for
+            future opportunities.
+          </p>
+
+        </div>
+
+
+        <p
+          style="
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          Thank you for your interest in Beastly Giveaway.
+        </p>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div
+        style="
+          background:#f9fafb;
+          padding:20px;
+          text-align:center;
+          border-top:1px solid #e5e7eb;
+        "
+      >
+
+        <p
+          style="
+            margin:4px 0;
+            color:#9ca3af;
+            font-size:12px;
+          "
+        >
+          © ${new Date().getFullYear()}
+          Beastly Giveaway
+        </p>
+
+        <p
+          style="
+            margin:4px 0;
+            color:#9ca3af;
+            font-size:12px;
+          "
+        >
+          Automated employment notification
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
+          `;
+
+        }
+
+
+        // Send email
+
+        await resend.emails.send({
+          from:
+            "Beastly Giveaway <noreply@beastlygiveaway.site>",
+
+          to:
+            applicantEmail,
+
+          subject,
+
+          html
+        });
+
+      } catch (emailError) {
+
+        console.error(
+          "Employment status email failed:",
+          emailError
+        );
+
+        // Important:
+        // The status was already updated.
+        // We do NOT roll it back just because
+        // email delivery failed.
+      }
+
+
+      // ==========================================
+      // SUCCESS
+      // ==========================================
+
+      return res.json({
+        success: true,
+        message:
+          `Application ${status} successfully.`,
+        status
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Employment status endpoint error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        error:
+          "Something went wrong while updating the application."
+      });
+
+    }
+
+  }
+);
+
+
+// ==========================================
+// 💼 EMPLOYMENT - VIEW PRIVATE DOCUMENT
+// ==========================================
+
+app.get(
+  "/admin/employment-applications/:id/document/:type",
+  async (req, res) => {
+
+    const {
+      id,
+      type
+    } = req.params;
+
+
+    if (
+      type !== "id-card" &&
+      type !== "cv"
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        error:
+          "Invalid document type."
+      });
+
+    }
+
+
+    try {
+
+      // ==========================================
+      // GET APPLICATION
+      // ==========================================
+
+      const {
+        data: application,
+        error
+      } = await supabaseAdmin
+        .from("employment_applications")
+        .select(
+          "id,id_card_url,cv_url"
+        )
+        .eq("id", id)
+        .single();
+
+
+      if (error || !application) {
+
+        return res.status(404).json({
+          success: false,
+          error:
+            "Employment application not found."
+        });
+
+      }
+
+
+      const filePath =
+        type === "id-card"
+          ? application.id_card_url
+          : application.cv_url;
+
+
+      if (!filePath) {
+
+        return res.status(404).json({
+          success: false,
+          error:
+            "This document was not provided."
+        });
+
+      }
+
+
+      // ==========================================
+      // CREATE TEMPORARY SIGNED URL
+      // ==========================================
+
+      const {
+        data: signedUrlData,
+        error: signedUrlError
+      } =
+        await supabaseAdmin
+          .storage
+          .from("employment-documents")
+          .createSignedUrl(
+            filePath,
+            300
+          );
+
+
+      if (signedUrlError) {
+
+        console.error(
+          "Signed URL error:",
+          signedUrlError
+        );
+
+        return res.status(500).json({
+          success: false,
+          error:
+            "Unable to create document link."
+        });
+
+      }
+
+
+      return res.json({
+        success: true,
+        url: signedUrlData.signedUrl
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Employment document endpoint error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        error:
+          "Unable to open document."
+      });
+
+    }
+
+  }
+);
 
 const PORT =
   process.env.PORT || 3000;

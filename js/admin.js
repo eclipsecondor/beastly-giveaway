@@ -347,6 +347,20 @@ if (
 
 }
 
+// =========================
+// 💼 EMPLOYMENT
+// =========================
+
+if (
+  currentTab === "employment"
+) {
+
+  loadEmploymentApplications();
+
+  return;
+
+}
+
     // =========================
     // PENDING / APPROVED /
     // REJECTED USERS
@@ -702,6 +716,93 @@ document.addEventListener("click", async (e) => {
     await rejectVote(voteId, userId, amount, createdAt);
     return;
   }
+
+  // =========================
+// 💼 EMPLOYMENT
+// =========================
+
+const employmentViewButton =
+  e.target.closest(".view-employment");
+
+if (employmentViewButton) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const applicationId =
+    employmentViewButton.dataset.id;
+
+  if (!applicationId) {
+    console.error("Missing employment application ID.");
+    return;
+  }
+
+  await viewEmploymentApplication(applicationId);
+
+  return;
+}
+
+
+const employmentDocumentButton =
+  e.target.closest(
+    ".view-employment-document"
+  );
+
+if (employmentDocumentButton) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const applicationId =
+    employmentDocumentButton.dataset.id;
+
+  const documentType =
+    employmentDocumentButton.dataset.type;
+
+  if (
+    !applicationId ||
+    !documentType
+  ) {
+    console.error(
+      "Missing employment document information."
+    );
+    return;
+  }
+
+  await viewEmploymentDocument(
+    applicationId,
+    documentType
+  );
+
+  return;
+}
+
+
+const employmentActionButton =
+  e.target.closest("[data-employment-action]");
+
+if (employmentActionButton) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const applicationId =
+    employmentActionButton.dataset.id;
+
+  const action =
+    employmentActionButton.dataset.employmentAction;
+
+  if (!applicationId || !action) {
+    console.error(
+      "Missing employment action information."
+    );
+    return;
+  }
+
+  await updateEmploymentApplicationStatus(
+    applicationId,
+    action
+  );
+
+  return;
+}
 
   // REMOVE USER
 
@@ -1804,3 +1905,1601 @@ emailStatus.textContent =
 
 }
 );
+
+// ==========================================
+// 💼 EMPLOYMENT APPLICATIONS
+// ==========================================
+
+let employmentApplications = [];
+let employmentSearchTerm = "";
+let employmentStatusFilter = "all";
+
+// ==========================================
+// LOAD EMPLOYMENT APPLICATIONS
+// ==========================================
+
+async function loadEmploymentApplications() {
+  const container =
+    document.getElementById("usersContainer");
+
+  if (!container) {
+    console.error(
+      "usersContainer not found."
+    );
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="employment-admin">
+
+      <div class="employment-header">
+
+        <div>
+          <h2>Employment Applications</h2>
+          <p>
+            Manage applications for the
+            Disbursement Officer position.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="employment-refresh-btn"
+          id="employmentRefreshBtn"
+        >
+          ↻ Refresh
+        </button>
+
+      </div>
+
+      <div class="employment-stats">
+
+        <div class="employment-stat-card">
+          <span class="employment-stat-label">
+            Total
+          </span>
+          <strong id="employmentTotal">
+            0
+          </strong>
+        </div>
+
+        <div class="employment-stat-card pending">
+          <span class="employment-stat-label">
+            Pending
+          </span>
+          <strong id="employmentPending">
+            0
+          </strong>
+        </div>
+
+        <div class="employment-stat-card approved">
+          <span class="employment-stat-label">
+            Approved
+          </span>
+          <strong id="employmentApproved">
+            0
+          </strong>
+        </div>
+
+        <div class="employment-stat-card rejected">
+          <span class="employment-stat-label">
+            Rejected
+          </span>
+          <strong id="employmentRejected">
+            0
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="employment-toolbar">
+
+        <div class="employment-search-wrapper">
+
+          <span class="employment-search-icon">
+            🔎
+          </span>
+
+          <input
+            type="text"
+            id="employmentSearch"
+            class="employment-search"
+            placeholder="Search by name, email or phone..."
+            autocomplete="off"
+          />
+
+        </div>
+
+        <div class="employment-filters">
+
+          <button
+            type="button"
+            class="employment-filter active"
+            data-employment-filter="all"
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            class="employment-filter"
+            data-employment-filter="pending"
+          >
+            Pending
+          </button>
+
+          <button
+            type="button"
+            class="employment-filter"
+            data-employment-filter="approved"
+          >
+            Approved
+          </button>
+
+          <button
+            type="button"
+            class="employment-filter"
+            data-employment-filter="rejected"
+          >
+            Rejected
+          </button>
+
+        </div>
+
+      </div>
+
+      <div
+        id="employmentApplicationsList"
+        class="employment-applications-grid"
+      >
+        <div class="employment-loading">
+          Loading applications...
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  employmentSearchTerm = "";
+  employmentStatusFilter = "all";
+
+  setupEmploymentControls();
+
+  await fetchEmploymentApplications();
+}
+
+
+// ==========================================
+// FETCH APPLICATIONS
+// ==========================================
+
+async function fetchEmploymentApplications() {
+  const list =
+    document.getElementById(
+      "employmentApplicationsList"
+    );
+
+  if (!list) return;
+
+  list.innerHTML = `
+    <div class="employment-loading">
+      Loading applications...
+    </div>
+  `;
+
+  try {
+    const response = await fetch(
+      "/admin/employment-applications"
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+        "Unable to load employment applications."
+      );
+    }
+
+    employmentApplications =
+      Array.isArray(result.applications)
+        ? result.applications
+        : [];
+
+    updateEmploymentStats();
+
+    renderEmploymentApplications();
+
+  } catch (error) {
+    console.error(
+      "Employment applications error:",
+      error
+    );
+
+    list.innerHTML = `
+      <div class="employment-empty error">
+        <div class="employment-empty-icon">
+          ⚠️
+        </div>
+
+        <h3>
+          Unable to load applications
+        </h3>
+
+        <p>
+          ${
+            escapeEmploymentHtml(
+              error.message
+            )
+          }
+        </p>
+
+        <button
+          type="button"
+          class="employment-retry-btn"
+          id="employmentRetryBtn"
+        >
+          Try Again
+        </button>
+      </div>
+    `;
+
+    const retryButton =
+      document.getElementById(
+        "employmentRetryBtn"
+      );
+
+    if (retryButton) {
+      retryButton.addEventListener(
+        "click",
+        fetchEmploymentApplications
+      );
+    }
+  }
+}
+
+
+// ==========================================
+// SETUP SEARCH + FILTERS
+// ==========================================
+
+function setupEmploymentControls() {
+
+  const searchInput =
+    document.getElementById(
+      "employmentSearch"
+    );
+
+  if (searchInput) {
+
+    searchInput.addEventListener(
+      "input",
+      () => {
+
+        employmentSearchTerm =
+          searchInput.value
+            .trim()
+            .toLowerCase();
+
+        renderEmploymentApplications();
+      }
+    );
+  }
+
+
+  const filterButtons =
+    document.querySelectorAll(
+      ".employment-filter"
+    );
+
+  filterButtons.forEach(
+    (button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          employmentStatusFilter =
+            button.dataset
+              .employmentFilter || "all";
+
+          filterButtons.forEach(
+            (item) => {
+              item.classList.remove(
+                "active"
+              );
+            }
+          );
+
+          button.classList.add(
+            "active"
+          );
+
+          renderEmploymentApplications();
+        }
+      );
+    }
+  );
+
+
+  const refreshButton =
+    document.getElementById(
+      "employmentRefreshBtn"
+    );
+
+  if (refreshButton) {
+
+    refreshButton.addEventListener(
+      "click",
+      async () => {
+
+        refreshButton.disabled = true;
+
+        refreshButton.textContent =
+          "↻ Refreshing...";
+
+        await fetchEmploymentApplications();
+
+        refreshButton.disabled = false;
+
+        refreshButton.textContent =
+          "↻ Refresh";
+      }
+    );
+  }
+}
+
+
+// ==========================================
+// UPDATE STATS
+// ==========================================
+
+function updateEmploymentStats() {
+
+  const total =
+    employmentApplications.length;
+
+  const pending =
+    employmentApplications.filter(
+      (application) =>
+        String(application.status)
+          .toLowerCase() === "pending"
+    ).length;
+
+  const approved =
+    employmentApplications.filter(
+      (application) =>
+        String(application.status)
+          .toLowerCase() === "approved"
+    ).length;
+
+  const rejected =
+    employmentApplications.filter(
+      (application) =>
+        String(application.status)
+          .toLowerCase() === "rejected"
+    ).length;
+
+
+  const totalElement =
+    document.getElementById(
+      "employmentTotal"
+    );
+
+  const pendingElement =
+    document.getElementById(
+      "employmentPending"
+    );
+
+  const approvedElement =
+    document.getElementById(
+      "employmentApproved"
+    );
+
+  const rejectedElement =
+    document.getElementById(
+      "employmentRejected"
+    );
+
+
+  if (totalElement) {
+    totalElement.textContent = total;
+  }
+
+  if (pendingElement) {
+    pendingElement.textContent = pending;
+  }
+
+  if (approvedElement) {
+    approvedElement.textContent = approved;
+  }
+
+  if (rejectedElement) {
+    rejectedElement.textContent = rejected;
+  }
+}
+
+
+// ==========================================
+// FILTER + RENDER APPLICATIONS
+// ==========================================
+
+function renderEmploymentApplications() {
+
+  const list =
+    document.getElementById(
+      "employmentApplicationsList"
+    );
+
+  if (!list) return;
+
+
+  let filtered =
+    [...employmentApplications];
+
+
+  // Status filter
+  if (
+    employmentStatusFilter !== "all"
+  ) {
+
+    filtered =
+      filtered.filter(
+        (application) =>
+          String(application.status)
+            .toLowerCase() ===
+          employmentStatusFilter
+      );
+  }
+
+
+  // Search
+  if (employmentSearchTerm) {
+
+    filtered =
+      filtered.filter(
+        (application) => {
+
+          const searchableText = [
+            application.full_name,
+            application.email,
+            application.phone,
+            application.location,
+            application.id
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return searchableText.includes(
+            employmentSearchTerm
+          );
+        }
+      );
+  }
+
+
+  if (filtered.length === 0) {
+
+    list.innerHTML = `
+      <div class="employment-empty">
+
+        <div class="employment-empty-icon">
+          📋
+        </div>
+
+        <h3>
+          No applications found
+        </h3>
+
+        <p>
+          ${
+            employmentSearchTerm
+              ? "Try a different search."
+              : "There are no applications in this category."
+          }
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filtered
+      .map(
+        (application) =>
+          createEmploymentCard(
+            application
+          )
+      )
+      .join("");
+}
+
+
+// ==========================================
+// CREATE APPLICATION CARD
+// ==========================================
+
+function createEmploymentCard(
+  application
+) {
+
+  const status =
+    String(
+      application.status || "pending"
+    ).toLowerCase();
+
+
+  const createdAt =
+    application.created_at
+      ? formatEmploymentDate(
+          application.created_at
+        )
+      : "Unknown";
+
+
+  const documents = [];
+
+  if (application.id_card_url) {
+    documents.push("ID Card");
+  }
+
+  if (application.cv_url) {
+    documents.push("CV");
+  }
+
+
+  const documentText =
+    documents.length > 0
+      ? documents.join(" + ")
+      : "No documents";
+
+
+  return `
+    <article
+      class="employment-card"
+      data-employment-id="${
+        escapeEmploymentAttribute(
+          application.id
+        )
+      }"
+    >
+
+      <div class="employment-card-top">
+
+        <div class="employment-avatar">
+          ${
+            getEmploymentInitials(
+              application.full_name
+            )
+          }
+        </div>
+
+        <span
+          class="
+            employment-status
+            ${status}
+          "
+        >
+          ${
+            capitalizeEmploymentStatus(
+              status
+            )
+          }
+        </span>
+
+      </div>
+
+
+      <div class="employment-card-body">
+
+        <h3 class="employment-name">
+          ${
+            escapeEmploymentHtml(
+              application.full_name ||
+              "Unnamed Applicant"
+            )
+          }
+        </h3>
+
+        <p class="employment-role">
+          Disbursement Officer
+        </p>
+
+
+        <div class="employment-contact">
+
+          <div>
+            <span>✉</span>
+            ${
+              escapeEmploymentHtml(
+                application.email ||
+                "No email"
+              )
+            }
+          </div>
+
+          <div>
+            <span>☎</span>
+            ${
+              escapeEmploymentHtml(
+                application.phone ||
+                "No phone"
+              )
+            }
+          </div>
+
+        </div>
+
+
+        <div class="employment-card-meta">
+
+          <span>
+            📅 ${createdAt}
+          </span>
+
+          <span>
+            📄 ${documentText}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="employment-card-footer">
+
+        <button
+          type="button"
+          class="view-employment"
+          data-id="${
+            escapeEmploymentAttribute(
+              application.id
+            )
+          }"
+        >
+          👁 View Application
+        </button>
+
+      </div>
+
+    </article>
+  `;
+}
+
+
+// ==========================================
+// VIEW ONE APPLICATION
+// ==========================================
+
+async function viewEmploymentApplication(
+  applicationId
+) {
+
+  console.log(
+    "Opening employment application:",
+    applicationId
+  );
+
+
+  if (!applicationId) {
+    console.error(
+      "No employment application ID."
+    );
+    return;
+  }
+
+
+  // Remove ANY existing modal first
+  const existingModal =
+    document.getElementById(
+      "employmentDetailModal"
+    );
+
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+
+  // Find the application already loaded
+  let application =
+    employmentApplications.find(
+      (item) =>
+        String(item.id) ===
+        String(applicationId)
+    );
+
+
+  // If it wasn't found, fetch fresh data
+  if (!application) {
+
+    try {
+
+      const response = await fetch(
+        "/admin/employment-applications"
+      );
+
+      const result =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error ||
+          "Unable to load application."
+        );
+      }
+
+      application =
+        (result.applications || []).find(
+          (item) =>
+            String(item.id) ===
+            String(applicationId)
+        );
+
+    } catch (error) {
+
+      console.error(
+        "Unable to open application:",
+        error
+      );
+
+      alert(
+        error.message ||
+        "Unable to open application."
+      );
+
+      return;
+    }
+  }
+
+
+  if (!application) {
+
+    alert(
+      "Employment application not found."
+    );
+
+    return;
+  }
+
+
+  createEmploymentDetailModal(
+    application
+  );
+}
+
+
+// ==========================================
+// CREATE DETAIL MODAL
+// ==========================================
+
+function createEmploymentDetailModal(
+  application
+) {
+
+  const status =
+    String(
+      application.status || "pending"
+    ).toLowerCase();
+
+
+  const modal =
+    document.createElement("div");
+
+  modal.id =
+    "employmentDetailModal";
+
+  modal.className =
+    "employment-modal-overlay";
+
+
+  modal.innerHTML = `
+    <div
+      class="employment-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="employmentModalTitle"
+    >
+
+      <div class="employment-modal-header">
+
+        <div>
+
+          <span class="employment-modal-eyebrow">
+            EMPLOYMENT APPLICATION
+          </span>
+
+          <h2 id="employmentModalTitle">
+            ${
+              escapeEmploymentHtml(
+                application.full_name ||
+                "Applicant"
+              )
+            }
+          </h2>
+
+          <p>
+            Disbursement Officer
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="employment-modal-close"
+          id="employmentModalClose"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="employment-modal-content">
+
+
+        <!-- PERSONAL INFORMATION -->
+
+        <section class="employment-detail-section">
+
+          <div class="employment-section-title">
+            <span>👤</span>
+            <h3>Personal Information</h3>
+          </div>
+
+
+          <div class="employment-detail-grid">
+
+            ${employmentDetailItem(
+              "Full Name",
+              application.full_name
+            )}
+
+            ${employmentDetailItem(
+              "Email",
+              application.email
+            )}
+
+            ${employmentDetailItem(
+              "Phone",
+              application.phone
+            )}
+
+            ${employmentDetailItem(
+              "Location",
+              application.location
+            )}
+
+            ${employmentDetailItem(
+              "Date of Birth",
+              application.date_of_birth
+            )}
+
+          </div>
+
+        </section>
+
+
+        <!-- IDENTIFICATION -->
+
+        <section class="employment-detail-section">
+
+          <div class="employment-section-title">
+            <span>🪪</span>
+            <h3>Identification</h3>
+          </div>
+
+
+          <div class="employment-detail-grid">
+
+            ${employmentDetailItem(
+              "ID Type",
+              application.id_type
+            )}
+
+            ${employmentDetailItem(
+              "ID Number",
+              application.id_number
+            )}
+
+          </div>
+
+        </section>
+
+
+        <!-- EMPLOYMENT -->
+
+        <section class="employment-detail-section">
+
+          <div class="employment-section-title">
+            <span>💼</span>
+            <h3>Employment Information</h3>
+          </div>
+
+
+          <div class="employment-long-field">
+
+            <label>
+              Employment History
+            </label>
+
+            <div>
+              ${
+                formatEmploymentText(
+                  application.employment_history
+                )
+              }
+            </div>
+
+          </div>
+
+
+          <div class="employment-long-field">
+
+            <label>
+              Experience
+            </label>
+
+            <div>
+              ${
+                formatEmploymentText(
+                  application.experience
+                )
+              }
+            </div>
+
+          </div>
+
+
+          <div class="employment-long-field">
+
+            <label>
+              Motivation
+            </label>
+
+            <div>
+              ${
+                formatEmploymentText(
+                  application.motivation
+                )
+              }
+            </div>
+
+          </div>
+
+
+          <div class="employment-long-field">
+
+            <label>
+              Availability
+            </label>
+
+            <div>
+              ${
+                formatEmploymentText(
+                  application.availability
+                )
+              }
+            </div>
+
+          </div>
+
+
+          <div class="employment-long-field">
+
+            <label>
+              Additional Information
+            </label>
+
+            <div>
+              ${
+                formatEmploymentText(
+                  application.additional_information
+                )
+              }
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- DOCUMENTS -->
+
+        <section class="employment-detail-section">
+
+          <div class="employment-section-title">
+            <span>📄</span>
+            <h3>Documents</h3>
+          </div>
+
+
+          <div class="employment-documents">
+
+            <div class="employment-document">
+
+              <div class="employment-document-icon">
+                🪪
+              </div>
+
+              <div class="employment-document-info">
+
+                <strong>
+                  ID Card
+                </strong>
+
+                <span>
+                  ${
+                    application.id_card_url
+                      ? "Uploaded"
+                      : "Not provided"
+                  }
+                </span>
+
+              </div>
+
+              ${
+                application.id_card_url
+                  ? `
+                    <button
+  type="button"
+  class="employment-document-btn view-employment-document"
+  data-id="${escapeEmploymentAttribute(application.id)}"
+  data-type="id-card"
+>
+  👁 View
+</button>
+                  `
+                  : ""
+              }
+
+            </div>
+
+
+            <div class="employment-document">
+
+              <div class="employment-document-icon">
+                📑
+              </div>
+
+              <div class="employment-document-info">
+
+                <strong>
+                  CV / Resume
+                </strong>
+
+                <span>
+                  ${
+                    application.cv_url
+                      ? "Uploaded"
+                      : "Not provided"
+                  }
+                </span>
+
+              </div>
+
+              ${
+                application.cv_url
+                  ? `
+                    <button
+  type="button"
+  class="employment-document-btn view-employment-document"
+  data-id="${escapeEmploymentAttribute(application.id)}"
+  data-type="cv"
+>
+  👁 View
+</button>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- STATUS -->
+
+        <section class="employment-detail-section">
+
+          <div class="employment-section-title">
+            <span>📌</span>
+            <h3>Application Status</h3>
+          </div>
+
+
+          <div class="employment-current-status">
+
+            <span
+              class="
+                employment-status
+                ${status}
+              "
+            >
+              ${
+                capitalizeEmploymentStatus(
+                  status
+                )
+              }
+            </span>
+
+          </div>
+
+        </section>
+
+
+      </div>
+
+
+      <div class="employment-modal-footer">
+
+        <button
+          type="button"
+          class="employment-close-btn"
+          id="employmentFooterClose"
+        >
+          Close
+        </button>
+
+
+        ${
+          status === "pending"
+            ? `
+              <div class="employment-decision-buttons">
+
+                <button
+                  type="button"
+                  class="employment-reject-btn"
+                  data-employment-action="reject"
+                  data-id="${
+                    escapeEmploymentAttribute(
+                      application.id
+                    )
+                  }"
+                >
+                  ✕ Reject
+                </button>
+
+                <button
+                  type="button"
+                  class="employment-approve-btn"
+                  data-employment-action="approve"
+                  data-id="${
+                    escapeEmploymentAttribute(
+                      application.id
+                    )
+                  }"
+                >
+                  ✓ Approve
+                </button>
+
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+    </div>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+
+
+  // Close using X
+  const closeButton =
+    modal.querySelector(
+      "#employmentModalClose"
+    );
+
+  if (closeButton) {
+
+    closeButton.addEventListener(
+      "click",
+      closeEmploymentModal
+    );
+  }
+
+
+  // Close using footer button
+  const footerClose =
+    modal.querySelector(
+      "#employmentFooterClose"
+    );
+
+  if (footerClose) {
+
+    footerClose.addEventListener(
+      "click",
+      closeEmploymentModal
+    );
+  }
+
+
+  // Close by clicking dark background
+  modal.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        event.target === modal
+      ) {
+        closeEmploymentModal();
+      }
+    }
+  );
+
+
+  // Escape key
+  document.addEventListener(
+    "keydown",
+    employmentEscapeHandler
+  );
+}
+
+
+// ==========================================
+// CLOSE MODAL
+// ==========================================
+
+function closeEmploymentModal() {
+
+  const modal =
+    document.getElementById(
+      "employmentDetailModal"
+    );
+
+  if (modal) {
+    modal.remove();
+  }
+
+  document.removeEventListener(
+    "keydown",
+    employmentEscapeHandler
+  );
+}
+
+
+function employmentEscapeHandler(
+  event
+) {
+
+  if (event.key === "Escape") {
+    closeEmploymentModal();
+  }
+}
+
+
+// ==========================================
+// DETAIL ITEM
+// ==========================================
+
+function employmentDetailItem(
+  label,
+  value
+) {
+
+  return `
+    <div class="employment-detail-item">
+
+      <span>
+        ${escapeEmploymentHtml(label)}
+      </span>
+
+      <strong>
+        ${
+          value
+            ? escapeEmploymentHtml(
+                value
+              )
+            : "Not provided"
+        }
+      </strong>
+
+    </div>
+  `;
+}
+
+
+// ==========================================
+// FORMAT TEXT
+// ==========================================
+
+function formatEmploymentText(
+  value
+) {
+
+  if (!value) {
+    return `
+      <span class="employment-not-provided">
+        Not provided
+      </span>
+    `;
+  }
+
+
+  return escapeEmploymentHtml(
+    value
+  ).replace(
+    /\n/g,
+    "<br>"
+  );
+}
+
+
+// ==========================================
+// FORMAT DATE
+// ==========================================
+
+function formatEmploymentDate(
+  value
+) {
+
+  if (!value) {
+    return "Unknown";
+  }
+
+
+  try {
+
+    return new Date(
+      value
+    ).toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }
+    );
+
+  } catch {
+    return value;
+  }
+}
+
+
+// ==========================================
+// INITIALS
+// ==========================================
+
+function getEmploymentInitials(
+  name
+) {
+
+  if (!name) {
+    return "?";
+  }
+
+
+  const parts =
+    name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+
+  if (parts.length === 1) {
+    return parts[0]
+      .substring(0, 2)
+      .toUpperCase();
+  }
+
+
+  return (
+    parts[0][0] +
+    parts[parts.length - 1][0]
+  ).toUpperCase();
+}
+
+
+// ==========================================
+// STATUS TEXT
+// ==========================================
+
+function capitalizeEmploymentStatus(
+  status
+) {
+
+  if (!status) {
+    return "Pending";
+  }
+
+
+  return (
+    status.charAt(0).toUpperCase() +
+    status.slice(1)
+  );
+}
+
+
+
+// ==========================================
+// HTML ESCAPING
+// ==========================================
+
+function escapeEmploymentHtml(
+  value
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
+
+  return String(value)
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+}
+
+
+function escapeEmploymentAttribute(
+  value
+) {
+  return escapeEmploymentHtml(
+    value
+  );
+}
+
+async function updateEmploymentApplicationStatus(
+  applicationId,
+  action
+) {
+  const newStatus =
+    action === "approve"
+      ? "approved"
+      : action === "reject"
+        ? "rejected"
+        : null;
+
+  if (!newStatus) {
+    console.error(
+      "Invalid employment action:",
+      action
+    );
+    return;
+  }
+
+  const actionText =
+    newStatus === "approved"
+      ? "approve"
+      : "reject";
+
+  const confirmed = confirm(
+    `Are you sure you want to ${actionText} this employment application?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/admin/employment-applications/${encodeURIComponent(
+        applicationId
+      )}/status`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          status: newStatus
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+          "Unable to update application status."
+      );
+    }
+
+    closeEmploymentModal();
+
+    alert(
+      newStatus === "approved"
+        ? "Application approved successfully."
+        : "Application rejected successfully."
+    );
+
+    await fetchEmploymentApplications();
+
+  } catch (error) {
+    console.error(
+      "Employment status update error:",
+      error
+    );
+
+    alert(
+      error.message ||
+        "Something went wrong while updating the application."
+    );
+  }
+}
+
+// ==========================================
+// 💼 VIEW EMPLOYMENT DOCUMENT
+// ==========================================
+
+async function viewEmploymentDocument(
+  applicationId,
+  documentType
+) {
+  try {
+    const response = await fetch(
+      `/admin/employment-applications/${encodeURIComponent(
+        applicationId
+      )}/document/${encodeURIComponent(
+        documentType
+      )}`
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+          "Unable to open document."
+      );
+    }
+
+    if (!result.url) {
+      throw new Error(
+        "Document URL was not returned."
+      );
+    }
+
+    window.open(
+      result.url,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  } catch (error) {
+    console.error(
+      "Employment document error:",
+      error
+    );
+
+    alert(
+      error.message ||
+        "Unable to open document."
+    );
+  }
+}

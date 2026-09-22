@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Employment — Beastly Giveaway</title>
+
+  <link rel="stylesheet" href="../css/employment.css">
+</head>
+
+<body>
+
+  <main class="employment-page">
+
+    <!-- HERO -->
+    <section class="employment-hero">
+      <div class="container">
+
+        <span class="eyebrow">CAREERS</span>
+
+        <h1>Disbursement Officer</h1>
+
+        <p>
+          Join the Beastly Giveaway team as a Disbursement Officer.
+          Complete the application below and our team will review your
+          information and contact you by email regarding the next step.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- APPLICATION -->
+    <section class="employment-section">
+
+      <div class="container">
+
+        <div class="application-card">
+
+          <div class="application-header">
+
+            <span class="section-label">EMPLOYMENT APPLICATION</span>
+
+            <h2>Apply for the position</h2>
+
+            <p>
+              Please provide accurate information. Your application and
+              submitted documents will be reviewed by our administration team.
+            </p>
+
+          </div>
+
+
+          <form id="employmentForm">
+
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="form-section">
+
+              <h3>Personal Information</h3>
+
+              <div class="form-grid">
+
+                <div class="form-group full">
+                  <label for="fullName">
+                    Full Name <span>*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    required
+                  >
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="email">
+                    Email Address <span>*</span>
+                  </label>
+
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="phone">
+                    Phone Number <span>*</span>
+                  </label>
+
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="location">
+                    Address <span>*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="location"
+                    name="address"
+                    placeholder="Enter your full address"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="dateOfBirth">
+                    Date of Birth
+                  </label>
+
+                  <input
+                    type="date"
+                    id="dateOfBirth"
+                    name="date_of_birth"
+                  >
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- IDENTIFICATION -->
+            <div class="form-section">
+
+              <h3>Identification</h3>
+
+              <p class="section-description">
+                Please provide a valid government-issued identification
+                document for verification.
+              </p>
+
+
+              <div class="form-grid">
+
+                <div class="form-group">
+
+                  <label for="idType">
+                    ID Type <span class="optional-green">(Optional)</span>
+                  </label>
+
+                  <select
+                    id="idType"
+                    name="id_type"
+                    
+                  >
+
+                    <option value="">
+                      Select ID type
+                    </option>
+
+                    <option value="National ID / NIN">
+                      National ID / NIN
+                    </option>
+
+                    <option value="International Passport">
+                      International Passport
+                    </option>
+
+                    <option value="Driver's License">
+                      Driver's License
+                    </option>
+
+                    <option value="Voter's Card">
+                      Voter's Card
+                    </option>
+
+                    <option value="Other">
+                      Other
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="idNumber">
+                    ID Number <span class="optional-green">(Optional)</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="idNumber"
+                    name="id_number"
+                    placeholder="Enter your ID number"
+                    
+                  >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                  <label for="idCard">
+  Upload ID Card
+  <small class="optional-label">(Optional)</small>
+</label>
+
+                  <div class="file-upload">
+
+                    <input
+                      type="file"
+                      id="idCard"
+                      name="id_card"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                    >
+
+                    <label for="idCard" class="file-label">
+
+                      <span class="file-icon">🪪</span>
+
+                      <span>
+                        <strong>Choose ID Card</strong>
+                        <small>
+                          PDF, JPG or PNG
+                        </small>
+                      </span>
+
+                    </label>
+
+                  </div>
+
+                  <small class="file-note">
+  Optional · PDF, JPG or PNG · Maximum 5MB
+</small>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- EMPLOYMENT INFORMATION -->
+            <div class="form-section">
+
+              <h3>Employment Information</h3>
+
+              <div class="form-grid">
+
+
+                <div class="form-group full">
+
+                  <label for="employmentHistory">
+                    Employment History <span class="optional-green">(Optional)</span>
+                  </label>
+
+                  <textarea
+                    id="employmentHistory"
+                    name="employment_history"
+                    rows="5"
+                    placeholder="Tell us about your previous employment if any..."
+                  ></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                  <label for="experience">
+                    Relevant Experience <span class="optional-green">(Optional)</span>
+                  </label>
+
+                  <textarea
+                    id="experience"
+                    name="experience"
+                    rows="5"
+                    placeholder="Describe any experience relevant to the Disbursement Officer role..."
+                  ></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                  <label for="motivation">
+                    Why do you want to work as a Disbursement Officer?
+                  </label>
+
+                  <textarea
+                    id="motivation"
+                    name="motivation"
+                    rows="5"
+                    placeholder="Tell us why you are interested in this position..."
+                  ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="availability">
+                    Availability
+                  </label>
+
+                  <select
+                    id="availability"
+                    name="availability"
+                  >
+
+                    <option value="">
+                      Select availability
+                    </option>
+
+                    <option value="Immediately">
+                      Immediately
+                    </option>
+
+                    <option value="Within 1 week">
+                      Within 1 week
+                    </option>
+
+                    <option value="Within 2 weeks">
+                      Within 2 weeks
+                    </option>
+
+                    <option value="Within 1 month">
+                      Within 1 month
+                    </option>
+
+                    <option value="More than 1 month">
+                      More than 1 month
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="additionalInformation">
+                    Additional Information <span class="optional-green">(Optional)</span>
+                  </label>
+
+                  <textarea
+                    id="additionalInformation"
+                    name="additional_information"
+                    rows="3"
+                    placeholder="Anything else you'd like us to know?"
+                  ></textarea>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- CV -->
+            <div class="form-section">
+
+              <h3>CV / Resume <span class="optional-green">(Optional)</span></h3>
+
+              <p class="section-description">
+                Upload your current CV or resume. 
+              </p>
+
+
+              <div class="form-group">
+
+                <label for="cv">
+  CV / Resume
+  <small class="optional-label">(Optional)</small>
+</label>
+
+                <div class="file-upload">
+
+                  <input
+                    type="file"
+                    id="cv"
+                    name="cv"
+                    accept=".pdf,.doc,.docx"
+                
+                  >
+
+                  <label for="cv" class="file-label">
+
+                    <span class="file-icon">📄</span>
+
+                    <span>
+                      <strong>Choose CV / Resume</strong>
+                      <small>
+                        PDF, DOC or DOCX
+                      </small>
+                    </span>
+
+                  </label>
+
+                </div>
+
+                <small class="file-note">
+  Optional · PDF, DOC or DOCX · Maximum 5MB
+</small>
+
+              </div>
+
+            </div>
+
+
+            <!-- AGREEMENT -->
+            <div class="application-agreement">
+
+              <label class="checkbox-label">
+
+                <input
+                  type="checkbox"
+                  id="agreement"
+                  required
+                >
+
+                <span>
+                  I confirm that the information provided in this application
+                  is accurate and complete, and I authorize Beastly Giveaway
+                  to review the information and documents submitted.
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div
+              id="employmentStatus"
+              class="employment-status"
+              aria-live="polite"
+            ></div>
+
+
+            <!-- SUBMIT -->
+            <button
+              type="submit"
+              id="employmentSubmitBtn"
+              class="submit-button"
+            >
+              Submit Application
+            </button>
+
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- EMPLOYMENT ALERT POPUP -->
+<div
+  id="employmentAlertModal"
+  class="employment-popup"
+  aria-hidden="true"
+>
+  <div class="employment-popup-backdrop"></div>
+
+  <div
+    class="employment-popup-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="employmentAlertTitle"
+  >
+    <button
+      type="button"
+      class="employment-popup-close"
+      id="employmentAlertClose"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+
+    <div class="employment-popup-icon" id="employmentAlertIcon">
+      ✓
+    </div>
+
+    <h3 id="employmentAlertTitle">
+      Application Received
+    </h3>
+
+    <p id="employmentAlertMessage"></p>
+
+    <button
+      type="button"
+      class="employment-popup-ok"
+      id="employmentAlertOk"
+    >
+      OK
+    </button>
+  </div>
+</div>
+
+
+  <script src="../js/employment.js"></script>
+
+</body>
+</html>
